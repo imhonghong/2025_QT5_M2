@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     FinishStageWidget.cpp \
+    FlagItem.cpp \
     FloorBrick.cpp \
     GameStageWidget.cpp \
     Mario.cpp \
@@ -20,8 +21,10 @@ SOURCES += \
 HEADERS += \
     Brick.h \
     FinishStageWidget.h \
+    FlagItem.h \
     FloorBrick.h \
     GameStageWidget.h \
+    Item.h \
     MainWindow.h \
     Mario.h \
     PrepareStageWidget.h

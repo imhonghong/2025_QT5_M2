@@ -12,7 +12,6 @@ FloorBrick::FloorBrick(int xPos, int yPos) {
 void FloorBrick::draw(QPainter& painter, int scrollX) {
     if (visible)
         painter.drawPixmap(x - scrollX, y, width, height, pixmap);
-    qDebug() << "Draw floor at x=" << x << ", screenX=" << x - scrollX;
 }
 
 void FloorBrick::onHitFromBelow() {
