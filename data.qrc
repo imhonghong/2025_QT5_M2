@@ -1,0 +1,59 @@
+<RCC>
+    <qresource prefix="/Mario">
+        <file>data/MB/MB_die.png</file>
+        <file>data/MB/MB_LJ_1.png</file>
+        <file>data/MB/MB_LJ_2.png</file>
+        <file>data/MB/MB_LJ_3.png</file>
+        <file>data/MB/MB_LJ_4.png</file>
+        <file>data/MB/MB_LR_0.png</file>
+        <file>data/MB/MB_LR_1.png</file>
+        <file>data/MB/MB_LR_2.png</file>
+        <file>data/MB/MB_LS_0.png</file>
+        <file>data/MB/MB_RJ_1.png</file>
+        <file>data/MB/MB_RJ_2.png</file>
+        <file>data/MB/MB_RJ_3.png</file>
+        <file>data/MB/MB_RJ_4.png</file>
+        <file>data/MB/MB_RR_0.png</file>
+        <file>data/MB/MB_RR_1.png</file>
+        <file>data/MB/MB_RR_2.png</file>
+        <file>data/MB/MB_RS_0.png</file>
+        <file>data/MS/MS_die.png</file>
+        <file>data/MS/MS_LJ_1.png</file>
+        <file>data/MS/MS_LJ_2.png</file>
+        <file>data/MS/MS_LJ_3.png</file>
+        <file>data/MS/MS_LJ_4.png</file>
+        <file>data/MS/MS_LR_0.png</file>
+        <file>data/MS/MS_LR_1.png</file>
+        <file>data/MS/MS_LR_2.png</file>
+        <file>data/MS/MS_LS_0.png</file>
+        <file>data/MS/MS_RJ_1.png</file>
+        <file>data/MS/MS_RJ_2.png</file>
+        <file>data/MS/MS_RJ_3.png</file>
+        <file>data/MS/MS_RJ_4.png</file>
+        <file>data/MS/MS_RR_0.png</file>
+        <file>data/MS/MS_RR_1.png</file>
+        <file>data/MS/MS_RR_2.png</file>
+        <file>data/MS/MS_RS_0.png</file>
+    </qresource>
+    <qresource prefix="/brick">
+        <file>data/brick/box brick.png</file>
+        <file>data/brick/broken brick.png</file>
+        <file>data/brick/floor brick.png</file>
+        <file>data/brick/normal brick.png</file>
+        <file>data/brick/stone brick.png</file>
+        <file>data/brick/water pipe.png</file>
+    </qresource>
+    <qresource prefix="/item">
+        <file>data/item/coin.png</file>
+        <file>data/item/Fire Flower.png</file>
+        <file>data/item/flag.png</file>
+        <file>data/item/flag-pole.png</file>
+        <file>data/item/super mushroom.png</file>
+    </qresource>
+    <qresource prefix="/bg">
+        <file>data/bg/background.png</file>
+        <file>data/bg/forest1.png</file>
+        <file>data/bg/start_btn.png</file>
+        <file>data/bg/start_screen.png</file>
+    </qresource>
+</RCC>
