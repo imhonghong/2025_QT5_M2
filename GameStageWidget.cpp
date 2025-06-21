@@ -100,6 +100,7 @@ void GameStageWidget::updateGame() {
             mario.setVy(0);
             mario.setOnGround(true);
             mario.setIsJumping(false);
+            mario.land();
         }
     }
 }

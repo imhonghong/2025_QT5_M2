@@ -33,7 +33,7 @@ public:
     bool getIsJumping() const { return isJumping; }
     void setIsJumping(bool val) { isJumping = val; }
 
-
+    void land();
     void die();
 
 private:

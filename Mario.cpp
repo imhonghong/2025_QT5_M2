@@ -46,6 +46,7 @@ void Mario::update() {
     animFrame = (animFrame + 1) % 3;
 
     if (!isOnGround) {
+        state = JUMPING;
         vy += 2;
         if (vy > 20) vy = 20;
         y += vy;
@@ -102,4 +103,13 @@ void Mario::loadAllPixmaps() {
 
 void Mario::die() {
     state = DYING;
+}
+
+void Mario::land() {
+    isOnGround = true;
+    isJumping = false;
+    vy = 0;
+
+    state = STANDING;
+
 }
