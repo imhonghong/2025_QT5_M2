@@ -13,6 +13,7 @@ SOURCES += \
     FlagItem.cpp \
     FloorBrick.cpp \
     GameStageWidget.cpp \
+    InteractiveBrick.cpp \
     Mario.cpp \
     PrepareStageWidget.cpp \
     main.cpp \
@@ -24,6 +25,7 @@ HEADERS += \
     FlagItem.h \
     FloorBrick.h \
     GameStageWidget.h \
+    InteractiveBrick.h \
     Item.h \
     MainWindow.h \
     Mario.h \

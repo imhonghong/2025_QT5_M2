@@ -57,7 +57,8 @@ GameStageWidget::GameStageWidget(QWidget* parent)
                 flag->update();         // 滑落動畫
                 if (flag->isDone()) {
                     flagTimer->stop();
-                    emit gameWin();     // 勝利訊號
+                    if(score >= 20) emit gameWin();
+                    else            emit gameLose();
                 }
             }
         }
@@ -143,10 +144,10 @@ void GameStageWidget::updateGame() {
         int mw = mario.getWidth();
         int mh = mario.getHeight();
 
-        int bx = brick->x;
-        int by = brick->y;
-        int bw = brick->width;
-        int bh = brick->height;
+        int bx = brick->getX();
+        int by = brick->getY();
+        int bw = brick->getWidth();
+        int bh = brick->getHeight();
 
         if (my + mh <= by && my + mh + mario.getVy() >= by &&
             mx + mw > bx && mx < bx + bw) {
@@ -167,17 +168,22 @@ void GameStageWidget::checkGameState()
         gameTimer->stop();
         emit gameLose();
     }
-    else if (score >= 21) {
+    else{
         // 確保只有真的有碰到旗子才算勝利
         for (Item* item : items) {
             auto* flag = dynamic_cast<FlagItem*>(item);
             if (flag && flag->isActivated()) {
                 gameTimer->stop();
-                emit gameWin();
+                if(score >= 20)
+                    emit gameWin();
+                else
+                    emit gameLose();
+
                 return;
             }
         }
     }
+    
 }
 
 void GameStageWidget::paintEvent(QPaintEvent*)

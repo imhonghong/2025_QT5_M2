@@ -1,7 +1,8 @@
 #include "FloorBrick.h"
 #include <QDebug>
 
-FloorBrick::FloorBrick(int xPos, int yPos) {
+FloorBrick::FloorBrick(int xPos, int yPos)
+    : Brick(xPos, yPos){
     x = xPos;
     y = yPos;
     width = 50;

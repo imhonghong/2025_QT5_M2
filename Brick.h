@@ -5,12 +5,19 @@
 
 class Brick {
 public:
-    int x, y;
-    int width, height;
-    bool visible = true;
-
+    Brick(int x, int y) : x(x), y(y), visible(true) {}
     virtual ~Brick() = default;
 
     virtual void draw(QPainter& painter, int scrollX) = 0;
     virtual void onHitFromBelow() = 0;
+
+    int getX() const { return x; }
+    int getY() const { return y; }
+    int getWidth() const { return width; }
+    int getHeight() const { return height; }
+
+protected:
+    int x, y;
+    int width, height;
+    bool visible = true;
 };
