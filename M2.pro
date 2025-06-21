@@ -12,6 +12,7 @@ SOURCES += \
     FinishStageWidget.cpp \
     FloorBrick.cpp \
     GameStageWidget.cpp \
+    Mario.cpp \
     PrepareStageWidget.cpp \
     main.cpp \
     MainWindow.cpp
@@ -22,6 +23,7 @@ HEADERS += \
     FloorBrick.h \
     GameStageWidget.h \
     MainWindow.h \
+    Mario.h \
     PrepareStageWidget.h
 
 FORMS += \

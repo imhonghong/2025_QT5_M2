@@ -7,6 +7,7 @@
 #include "Brick.h"
 #include "FloorBrick.h"
 #include <QVector>
+#include "Mario.h"
 
 
 class GameStageWidget : public QWidget
@@ -19,6 +20,8 @@ public:
 
 protected:
     void paintEvent(QPaintEvent*) override;
+    void keyPressEvent(QKeyEvent* event) override;
+    void keyReleaseEvent(QKeyEvent* event) override;
 
 signals:
     void gameWin();
@@ -31,6 +34,7 @@ private:
     QTimer* gameTimer;
     QLabel* hpLabel;
     QLabel* scoreLabel;
+    QLabel* marioPosLabel;
 
     int hp;
     int score;
@@ -39,6 +43,10 @@ private:
     int scrollX = 0;            // 捲動的水平偏移（例如 Mario 的位置）
 
     QVector<Brick*> bricks;  // 加入這個成員變數
+
+    Mario mario;
+
+    bool isDeathHandled = false; // 防止重複 emit
 
     void checkGameState(); // 判斷是否勝利或失敗
 };
