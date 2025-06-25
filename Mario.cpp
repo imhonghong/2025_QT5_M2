@@ -108,5 +108,17 @@ void Mario::land() {
     isOnGround = true;
     isJumping = false;
     vy = 0;
-    // state = STANDING;
+
+}
+
+void Mario::setIsBig(bool x) {
+    isBig = x;
+
+    if (isBig) {
+        width = 56;
+        height = 80;  // 變大時，調整高度
+    } else {
+        width = 50;
+        height = 50;   // 恢復小瑪利歐大小
+    }
 }

@@ -6,6 +6,7 @@
 #include "Coin.h"
 #include "NormalBrick.h"
 #include "BrokenBrick.h"
+#include "SuperMushroom.h"
 
 #include <QVBoxLayout>
 #include <QPainter>
@@ -110,6 +111,9 @@ void GameStageWidget::initStage() {
     // 金幣
     Coin* c = new Coin(400, 400);
     items.push_back(c);
+
+    // superMushroom
+    items.append(new SuperMushroom(300, 400));
 
 
 
@@ -229,6 +233,15 @@ void GameStageWidget::updateGame() {
             coin->setVisible(false);
             score++;
             qDebug() << "Coin collected! Score: " << score;
+        }
+    }
+
+    for (Item* item : items) {
+        SuperMushroom* sm = dynamic_cast<SuperMushroom*>(item);
+        if (sm && sm->checkCollision(mario)) {
+            mario.setIsBig(true);
+            sm->setCollected(true);  // 你可以新增這函式，或直接 sm->collected = true;
+            qDebug() << "Mario eat Super Mushroom!";
         }
     }
 

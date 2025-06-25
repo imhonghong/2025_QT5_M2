@@ -20,6 +20,7 @@ SOURCES += \
     Mario.cpp \
     NormalBrick.cpp \
     PrepareStageWidget.cpp \
+    SuperMushroom.cpp \
     main.cpp \
     MainWindow.cpp
 
@@ -37,7 +38,8 @@ HEADERS += \
     MainWindow.h \
     Mario.h \
     NormalBrick.h \
-    PrepareStageWidget.h
+    PrepareStageWidget.h \
+    SuperMushroom.h
 
 FORMS += \
     mainwindow.ui

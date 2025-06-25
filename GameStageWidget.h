@@ -12,8 +12,7 @@
 #include "Item.h"
 #include "FlagItem.h"
 #include "FloatingCoin.h"
-
-
+#include "SuperMushroom.h"
 
 class GameStageWidget : public QWidget
 {

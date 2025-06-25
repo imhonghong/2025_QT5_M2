@@ -43,6 +43,8 @@ public:
     void land();
     void die();
 
+    void setIsBig(bool x);
+
 private:
     int x, y;
     int width, height;
