@@ -4,16 +4,15 @@
 
 Mario::Mario()
 {
-    x = 100;
+    x = 0;
     y = 420;
     vy = 0;
-    isOnGround = false;
+    isOnGround = true;
     width = 50;
     height = 50;
     isBig = false;
     facing = RIGHT;
     state = STANDING;
-
 
     animFrame = 0;
 
@@ -109,7 +108,5 @@ void Mario::land() {
     isOnGround = true;
     isJumping = false;
     vy = 0;
-
-    state = STANDING;
-
+    // state = STANDING;
 }

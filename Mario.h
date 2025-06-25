@@ -21,6 +21,9 @@ public:
     int getX() const { return x; }
     int getY() const { return y; }
 
+    State getState() const { return state; }
+    void setState(State s) { state = s; }
+
     int getWidth() const { return width; }
     int getHeight() const { return height; }
     bool getOnGround() const {return isOnGround; }

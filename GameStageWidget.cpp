@@ -1,6 +1,7 @@
 #include "GameStageWidget.h"
 #include "FloorBrick.h"
 #include "Item.h"
+#include "Mario.h"
 #include <QVBoxLayout>
 #include <QPainter>
 #include <QKeyEvent>
@@ -12,13 +13,16 @@ GameStageWidget::GameStageWidget(QWidget* parent)
 {
 
     hpLabel = new QLabel("HP: 3", this);
-    hpLabel->move(0,5);
+    hpLabel->move(5,5);
+    hpLabel->setStyleSheet("color: red; font-weight: bold;");
     scoreLabel = new QLabel("Score: 0", this);
+    scoreLabel->setFixedWidth(100);
     scoreLabel->move(100,5);
+    scoreLabel->setStyleSheet("color: red; font-weight: bold;");
 
     marioPosLabel = new QLabel("X:1000", this);
     marioPosLabel->setFixedWidth(400);
-    marioPosLabel->move(200, 5);  // 位置你可自訂
+    marioPosLabel->move(200, 5);
     marioPosLabel->setStyleSheet("color: white; font-weight: bold;");
 
     coinButton = new QPushButton("+1 Coin", this);
@@ -81,7 +85,7 @@ void GameStageWidget::initStage() {
         if (i % tilesPerScreen == tilesPerScreen / 2) continue;
         Brick* b = new FloorBrick(i * tileWidth, groundY);
         bricks.push_back(b);
-        qDebug() << "Init floor at x =" << i * tileWidth;
+        // qDebug() << "Init floor at x =" << i * tileWidth;
     }
 
     items.push_back(new FlagItem(6975, 520));
@@ -118,6 +122,10 @@ void GameStageWidget::updateGame() {
         }
     }
 
+    if (mario.getOnGround() && mario.getState() == Mario::JUMPING) {
+        mario.setState(Mario::STANDING);
+
+    }
     mario.update();
 
     for (Item* item : items) {
@@ -167,21 +175,6 @@ void GameStageWidget::checkGameState()
     if (hp <= 0) {
         gameTimer->stop();
         emit gameLose();
-    }
-    else{
-        // 確保只有真的有碰到旗子才算勝利
-        for (Item* item : items) {
-            auto* flag = dynamic_cast<FlagItem*>(item);
-            if (flag && flag->isActivated()) {
-                gameTimer->stop();
-                if(score >= 20)
-                    emit gameWin();
-                else
-                    emit gameLose();
-
-                return;
-            }
-        }
     }
     
 }
