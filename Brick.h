@@ -6,7 +6,9 @@
 
 class Brick {
 public:
-    Brick(int x, int y) : x(x), y(y), visible(true) {}
+    Brick(int x, int y, int w = 50, int h = 50)
+            : x(x), y(y), width(w), height(h), visible(true) {}
+
     virtual ~Brick() = default;
 
     virtual void draw(QPainter& painter, int scrollX) = 0;

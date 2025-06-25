@@ -11,6 +11,8 @@
 #include "Mario.h"
 #include "Item.h"
 #include "FlagItem.h"
+#include "FloatingCoin.h"
+
 
 
 class GameStageWidget : public QWidget
@@ -57,4 +59,6 @@ private:
     QTimer* flagTimer;          // 控制旗子滑落動畫
 
     void checkGameState(); // 判斷是否勝利或失敗
+
+    QVector<FloatingCoin*> floatingCoins;
 };

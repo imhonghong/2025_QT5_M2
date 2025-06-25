@@ -4,6 +4,7 @@
 #include "Mario.h"
 #include "InteractiveBrick.h"
 #include "Coin.h"
+#include "NormalBrick.h"
 
 #include <QVBoxLayout>
 #include <QPainter>
@@ -92,6 +93,10 @@ void GameStageWidget::initStage() {
     }
     Brick* b = new InteractiveBrick(450, 370, BrickContent::Coin);
     bricks.push_back(b);
+
+    Brick* nb = new NormalBrick(600, 370, 3);  // 擺在某個你看得到的位置
+    bricks.push_back(nb);
+    bricks.push_back(new NormalBrick(1000, 370));  // 不含金幣
     qDebug() << "Init InteractiveBrick at pos = (450, 370)";
 
     // 旗子
@@ -100,6 +105,8 @@ void GameStageWidget::initStage() {
     // 金幣
     Coin* c = new Coin(400, 400);
     items.push_back(c);
+
+
 
 }
 
@@ -164,7 +171,20 @@ void GameStageWidget::updateGame() {
         QRect marioHead(mx, my, mw, 1);
         if (!mario.getOnGround() && mario.getVy() < 0 && marioHead.intersects(brickRect)) {
             mario.setVy(0);
-            brick->onHitFromBelow();
+        // 🔽 在這裡處理敲擊 & 加分
+            NormalBrick* nb = dynamic_cast<NormalBrick*>(brick);
+            if (nb) {
+                int before = nb->getCoinsLeft();  // 需要你加一個 getCoinsLeft()
+                nb->onHitFromBelow();             // 執行扣除
+                int after = nb->getCoinsLeft();
+                score += (before - after);        // 加了幾分
+                if (before > after) {
+                    floatingCoins.append(new FloatingCoin(brick->getX(), brick->getY()-50));
+                }
+                qDebug() << "NormalBrick hit: + " << (before - after) << " Score: " << score;
+            } else {
+                brick->onHitFromBelow();  // 一般互動磚還是會做反應
+            }
         }
 
         // === 往下撞到磚塊（腳落地）===
@@ -201,6 +221,17 @@ void GameStageWidget::updateGame() {
             coin->setVisible(false);
             score++;
             qDebug() << "Coin collected! Score: " << score;
+        }
+    }
+
+    // 更新浮動金幣動畫
+    for (int i = 0; i < floatingCoins.size(); ) {
+        floatingCoins[i]->update();
+        if (floatingCoins[i]->isDone()) {
+            delete floatingCoins[i];
+            floatingCoins.remove(i);
+        } else {
+            ++i;
         }
     }
 
@@ -250,6 +281,10 @@ void GameStageWidget::paintEvent(QPaintEvent*)
         if (item) item->draw(painter, scrollX);
     }
     mario.draw(painter, scrollX);
+
+    for (FloatingCoin* fc : floatingCoins) {
+        fc->draw(painter, scrollX);
+    }
 
 }
 

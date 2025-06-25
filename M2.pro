@@ -12,10 +12,12 @@ SOURCES += \
     Coin.cpp \
     FinishStageWidget.cpp \
     FlagItem.cpp \
+    FloatingCoin.cpp \
     FloorBrick.cpp \
     GameStageWidget.cpp \
     InteractiveBrick.cpp \
     Mario.cpp \
+    NormalBrick.cpp \
     PrepareStageWidget.cpp \
     main.cpp \
     MainWindow.cpp
@@ -25,12 +27,14 @@ HEADERS += \
     Coin.h \
     FinishStageWidget.h \
     FlagItem.h \
+    FloatingCoin.h \
     FloorBrick.h \
     GameStageWidget.h \
     InteractiveBrick.h \
     Item.h \
     MainWindow.h \
     Mario.h \
+    NormalBrick.h \
     PrepareStageWidget.h
 
 FORMS += \
