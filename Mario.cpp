@@ -122,3 +122,19 @@ void Mario::setIsBig(bool x) {
         height = 50;   // 恢復小瑪利歐大小
     }
 }
+
+void Mario::enableFire() {
+    fireballsLeft = 3;
+}
+
+bool Mario::canShoot() const {
+    return fireballsLeft > 0;
+}
+
+bool Mario::shootFireball() {
+    if (fireballsLeft > 0) {
+        fireballsLeft--;
+        return true;
+    }
+    return false;
+}

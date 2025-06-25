@@ -1,8 +1,12 @@
 #include "InteractiveBrick.h"
+#include "SuperMushroom.h"
+#include "Coin.h"
+#include "FireFlower.h"
+#include "GameStageWidget.h"
 #include <QDebug>
 
-InteractiveBrick::InteractiveBrick(int x, int y, BrickContent content)
-    : Brick(x, y), content(content)
+InteractiveBrick::InteractiveBrick(int x, int y, BrickContent content, GameStageWidget* game)
+    : Brick(x, y), content(content), game(game)
 {
     width = height = 50;
     activePixmap = QPixmap(":/brick/data/brick/box brick.png");
@@ -20,18 +24,18 @@ int InteractiveBrick::onHitFromBelow() {
     if (used) return 0;
     used = true;
 
-    // 這裡先用 qDebug 模擬掉落物件行為
-    switch (content) {
-    case BrickContent::Coin:
-        qDebug() << "Coin appeared at (" << x << "," << y << ")";
-        break;
-    case BrickContent::Mushroom:
-        qDebug() << "Mushroom appeared at (" << x << "," << y << ")";
-        break;
-    case BrickContent::FireFlower:
-        qDebug() << "Fire Flower appeared at (" << x << "," << y << ")";
-        break;
-    default:
-        break;
-    }
+    int r = rand() % 3;  // 0 = coin, 1 = mushroom, 2 = fireflower
+    Item* item = nullptr;
+
+    if (r == 0)
+        item = new Coin(x, y - 50);
+    else if (r == 1)
+        item = new SuperMushroom(x, y - 50);
+    else
+        item = new FireFlower(x, y - 50);
+
+    if (item)
+        game->addItem(item);
+
+    return 0;  // 🔺 補上 return 值
 }

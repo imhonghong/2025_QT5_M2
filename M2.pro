@@ -12,6 +12,8 @@ SOURCES += \
     BrokenBrick.cpp \
     Coin.cpp \
     FinishStageWidget.cpp \
+    FireFlower.cpp \
+    Fireball.cpp \
     FlagItem.cpp \
     FloatingCoin.cpp \
     FloorBrick.cpp \
@@ -29,6 +31,8 @@ HEADERS += \
     BrokenBrick.h \
     Coin.h \
     FinishStageWidget.h \
+    FireFlower.h \
+    Fireball.h \
     FlagItem.h \
     FloatingCoin.h \
     FloorBrick.h \

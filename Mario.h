@@ -45,6 +45,10 @@ public:
 
     void setIsBig(bool x);
 
+    void enableFire();  // 吃到火花後進入能射擊狀態
+    bool canShoot() const;
+    bool shootFireball();  // 嘗試發射一顆火球（若還有子彈）
+
 private:
     int x, y;
     int width, height;
@@ -61,4 +65,6 @@ private:
 
     QPixmap getCurrentFrame();
     void loadAllPixmaps(); // 載入所有圖片
+
+    int fireballsLeft;
 };

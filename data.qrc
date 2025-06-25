@@ -49,6 +49,7 @@
         <file>data/item/flag.png</file>
         <file>data/item/flag-pole.png</file>
         <file>data/item/super mushroom.png</file>
+        <file>data/item/bullet.png</file>
     </qresource>
     <qresource prefix="/bg">
         <file>data/bg/background.png</file>

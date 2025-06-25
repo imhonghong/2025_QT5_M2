@@ -7,7 +7,10 @@
 #include "NormalBrick.h"
 #include "BrokenBrick.h"
 #include "SuperMushroom.h"
+#include "FireFlower.h"
+#include "Fireball.h"
 
+#include <cmath>
 #include <QVBoxLayout>
 #include <QPainter>
 #include <QKeyEvent>
@@ -93,8 +96,7 @@ void GameStageWidget::initStage() {
         bricks.push_back(b);
         // qDebug() << "Init floor at x =" << i * tileWidth;
     }
-    Brick* b = new InteractiveBrick(450, 370, BrickContent::Coin);
-    bricks.push_back(b);
+    bricks.append(new InteractiveBrick(500, 400, BrickContent::None, this));
 
     Brick* nb = new NormalBrick(600, 370, 3);  // 擺在某個你看得到的位置
     bricks.push_back(nb);
@@ -113,7 +115,7 @@ void GameStageWidget::initStage() {
     items.push_back(c);
 
     // superMushroom
-    items.append(new SuperMushroom(300, 400));
+    items.append(new FireFlower(300, 400));
 
 
 
@@ -128,6 +130,10 @@ void GameStageWidget::reset()
     isDeathHandled = false;
     qDebug() << "[GameStage] Game reset!";
     gameTimer->start();
+}
+
+void GameStageWidget::addItem(Item* item) {
+    items.append(item);
 }
 
 void GameStageWidget::updateGame() {
@@ -245,6 +251,34 @@ void GameStageWidget::updateGame() {
         }
     }
 
+    for (Item* item : items) {
+        FireFlower* flower = dynamic_cast<FireFlower*>(item);
+        if (flower && flower->checkCollision(mario)) {
+            mario.enableFire();
+            flower->setCollected(true);
+            qDebug() << "Mario got Fire Flower!";
+        }
+    }
+
+    for (int i = 0; i < fireballs.size(); ++i) {
+        Fireball* fb = fireballs[i];
+        fb->update();
+
+        // 🔸 檢查撞磚塊
+        for (Brick* brick : bricks) {
+            if (fb->getRect().intersects(brick->getRect())) {
+                fb->destroy();
+                break;
+            }
+        }
+
+        if (!fb->isAlive()) {
+            delete fb;
+            fireballs.remove(i);
+            --i;
+        }
+    }
+
     // broken brick移除
     for (int i = 0; i < bricks.size(); ) {
         BrokenBrick* bb = dynamic_cast<BrokenBrick*>(bricks[i]);
@@ -317,6 +351,8 @@ void GameStageWidget::paintEvent(QPaintEvent*)
     for (FloatingCoin* fc : floatingCoins) {
         fc->draw(painter, scrollX);
     }
+    for (Fireball* f : fireballs)
+        f->draw(painter, scrollX);
 
 }
 
@@ -342,4 +378,22 @@ void GameStageWidget::keyReleaseEvent(QKeyEvent* event)
         mario.stopMoving();
     }
     QWidget::keyReleaseEvent(event);
+}
+
+void GameStageWidget::mousePressEvent(QMouseEvent* event) {
+    if (mario.canShoot() && event->button() == Qt::LeftButton) {
+        QPoint target = event->pos();
+        int mx = mario.getX() + mario.getWidth() / 2;
+        int my = mario.getY() + mario.getHeight() / 2;
+        float dx = target.x() + scrollX - mx;
+        float dy = target.y() - my;
+        float len = sqrt(dx*dx + dy*dy);
+        float speed = 10.0;
+        float vx = speed * dx / len;
+        float vy = speed * dy / len;
+
+        if (mario.shootFireball()) {
+            fireballs.append(new Fireball(mx, my, vx, vy));
+        }
+    }
 }

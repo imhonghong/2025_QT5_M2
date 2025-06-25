@@ -13,6 +13,7 @@
 #include "FlagItem.h"
 #include "FloatingCoin.h"
 #include "SuperMushroom.h"
+#include "Fireball.h"
 
 class GameStageWidget : public QWidget
 {
@@ -22,10 +23,13 @@ public:
     explicit GameStageWidget(QWidget* parent = nullptr);
     void reset(); // 重新初始化遊戲
 
+    void addItem(Item* item);
+
 protected:
     void paintEvent(QPaintEvent*) override;
     void keyPressEvent(QKeyEvent* event) override;
     void keyReleaseEvent(QKeyEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
 signals:
     void gameWin();
@@ -60,5 +64,6 @@ private:
     void checkGameState(); // 判斷是否勝利或失敗
 
     QVector<FloatingCoin*> floatingCoins;
+    QVector<Fireball*> fireballs;
 
 };
