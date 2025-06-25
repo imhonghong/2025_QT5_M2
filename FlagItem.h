@@ -14,6 +14,12 @@ public:
     bool isActivated() const;
     bool isDone() const;
 
+    void setX(int x_pos) { x = x_pos ;}
+    void setY(int y_pos) { y = y_pos ;}
+    int getX() const { return x ;}
+    int getY() const { return y ;}
+
+
 private:
     QPixmap flagPixmap;
     QPixmap polePixmap;

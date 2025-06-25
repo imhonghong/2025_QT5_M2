@@ -1,6 +1,8 @@
 #include "FlagItem.h"
 #include "Mario.h"
 
+#include <QDebug>
+
 FlagItem::FlagItem(int x, int y)
     : Item(x, y, 50, 100)  // 寬高設為旗杆大小
 {

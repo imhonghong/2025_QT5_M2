@@ -22,4 +22,5 @@ public:
 
     void draw(QPainter& painter, int scrollX) override;
     void onHitFromBelow() override;
+
 };

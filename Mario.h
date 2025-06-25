@@ -18,8 +18,10 @@ public:
     void update(); // 處理動畫幀與狀態變化
     void draw(QPainter& painter, int scrollX); // 畫出角色
 
+    void setX(int x_pos) { x = x_pos ;}
     int getX() const { return x; }
     int getY() const { return y; }
+    Direction getDirection() const { return facing; }
 
     State getState() const { return state; }
     void setState(State s) { state = s; }

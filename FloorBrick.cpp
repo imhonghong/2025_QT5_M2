@@ -18,3 +18,4 @@ void FloorBrick::draw(QPainter& painter, int scrollX) {
 void FloorBrick::onHitFromBelow() {
     // Floor brick 沒有反應
 }
+

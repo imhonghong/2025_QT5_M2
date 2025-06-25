@@ -5,8 +5,8 @@ InteractiveBrick::InteractiveBrick(int x, int y, BrickContent content)
     : Brick(x, y), content(content)
 {
     width = height = 50;
-    activePixmap = QPixmap(":/block/coin-brick.png");
-    usedPixmap = QPixmap(":/block/used-brick.png");
+    activePixmap = QPixmap(":/brick/data/brick/box brick.png");
+    usedPixmap = QPixmap(":/brick/data/brick/stone brick.png");
 }
 
 void InteractiveBrick::draw(QPainter& painter, int scrollX) {

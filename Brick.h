@@ -2,6 +2,7 @@
 
 #include <QPainter>
 #include <QPixmap>
+#include "Mario.h"
 
 class Brick {
 public:

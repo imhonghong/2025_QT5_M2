@@ -2,6 +2,8 @@
 #include "FloorBrick.h"
 #include "Item.h"
 #include "Mario.h"
+#include "InteractiveBrick.h"
+
 #include <QVBoxLayout>
 #include <QPainter>
 #include <QKeyEvent>
@@ -87,6 +89,9 @@ void GameStageWidget::initStage() {
         bricks.push_back(b);
         // qDebug() << "Init floor at x =" << i * tileWidth;
     }
+    Brick* b = new InteractiveBrick(450, 370, BrickContent::Coin);
+    bricks.push_back(b);
+    qDebug() << "Init InteractiveBrick at pos = (450, 370)";
 
     items.push_back(new FlagItem(6975, 520));
 }
@@ -122,28 +127,15 @@ void GameStageWidget::updateGame() {
         }
     }
 
+    // 跳躍後落地
     if (mario.getOnGround() && mario.getState() == Mario::JUMPING) {
         mario.setState(Mario::STANDING);
 
     }
     mario.update();
 
-    for (Item* item : items) {
-        auto* flag = dynamic_cast<FlagItem*>(item);
-        if (flag && flag->checkCollision(mario)) {
-            flag->activate();
-            gameTimer->stop();
-            flagTimer->start(30);
-            return;
-        }
-    }
-
-    checkGameState();
-    update();
-    marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
-    scoreLabel->setText(QString("Score: %1").arg(score));
-    mario.setOnGround(false);
-
+    bool landed = false;
+    // 和磚塊碰撞
     for (Brick* brick : bricks) {
         if (!brick) continue;
 
@@ -157,6 +149,18 @@ void GameStageWidget::updateGame() {
         int bw = brick->getWidth();
         int bh = brick->getHeight();
 
+        // 建立 QRect 幫助判斷
+        QRect marioRect(mx, my, mw, mh);
+        QRect brickRect(bx, by, bw, bh);
+
+        // === 往上撞到磚塊 ===
+        QRect marioHead(mx, my, mw, 1);
+        if (!mario.getOnGround() && mario.getVy() < 0 && marioHead.intersects(brickRect)) {
+            mario.setVy(0);
+            brick->onHitFromBelow();
+        }
+
+        // === 往下撞到磚塊（腳落地）===
         if (my + mh <= by && my + mh + mario.getVy() >= by &&
             mx + mw > bx && mx < bx + bw) {
             mario.setY(by - mh);
@@ -164,8 +168,32 @@ void GameStageWidget::updateGame() {
             mario.setOnGround(true);
             mario.setIsJumping(false);
             mario.land();
+            landed = true;
+        }
+
+        if (marioRect.intersects(brickRect)) {
+            bool isAbove = my + mh <= by + 5;
+            bool isBelow = my >= by + bh - 5;
+
+            if (!isAbove && !isBelow) {
+                if (mario.getDirection() == Mario::LEFT) {
+                    mario.setX(bx + bw);  // 撞到右側 → 擋住
+                    qDebug() << "碰撞右側";
+                }
+                else if (mario.getDirection() == Mario::RIGHT) {
+                    mario.setX(bx - mw);  // 撞到左側 → 擋住
+                    qDebug() << "碰撞左側";
+                }
+            }
         }
     }
+    checkGameState();
+    update();
+    marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
+    scoreLabel->setText(QString("Score: %1").arg(score));
+    if (!landed) mario.setOnGround(false);
+
+
 }
 
 
@@ -176,7 +204,17 @@ void GameStageWidget::checkGameState()
         gameTimer->stop();
         emit gameLose();
     }
-    
+
+    // 碰到旗杆
+    for (Item* item : items) {
+        auto* flag = dynamic_cast<FlagItem*>(item);
+        if ( flag && flag->checkCollision(mario)) {
+            flag->activate();
+            gameTimer->stop();
+            flagTimer->start(30);
+            return;
+        }
+    }
 }
 
 void GameStageWidget::paintEvent(QPaintEvent*)
@@ -207,7 +245,7 @@ void GameStageWidget::keyPressEvent(QKeyEvent* event)
     }
     if (event->key() == Qt::Key_Space && !mario.getIsJumping()) {
         if (mario.getOnGround()) {
-            mario.setVy(-20);             // 向上跳
+            mario.setVy(-22);             // 向上跳
             mario.setOnGround(false);     // 離地
         }
     }
