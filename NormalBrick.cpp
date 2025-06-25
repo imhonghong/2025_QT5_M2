@@ -15,16 +15,14 @@ void NormalBrick::draw(QPainter& painter, int scrollX) {
     }
 }
 
-void NormalBrick::onHitFromBelow() {
-    if (isDepleted) return;
+int NormalBrick::onHitFromBelow() {
+    if (isDepleted) return 0;
 
     if (coinsLeft > 0) {
         coinsLeft--;
+        if (coinsLeft == 0) isDepleted = true;
         qDebug() << "Coin from normal brick! Remaining:" << coinsLeft;
+        return 1;  // 回傳 1 分
     }
-
-    if (coinsLeft == 0) {
-        isDepleted = true;
-        qDebug() << "Normal brick is now depleted!";
-    }
+    return 0;
 }

@@ -61,4 +61,5 @@ private:
     void checkGameState(); // 判斷是否勝利或失敗
 
     QVector<FloatingCoin*> floatingCoins;
+
 };

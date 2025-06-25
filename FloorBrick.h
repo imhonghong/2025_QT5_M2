@@ -6,7 +6,7 @@ class FloorBrick : public Brick {
 public:
     FloorBrick(int x, int y);
     void draw(QPainter& painter, int scrollX) override;
-    void onHitFromBelow() override;
+    int onHitFromBelow() override;
 
 private:
     QPixmap pixmap;

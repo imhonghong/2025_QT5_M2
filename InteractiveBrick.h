@@ -21,6 +21,6 @@ public:
     InteractiveBrick(int x, int y, BrickContent content);
 
     void draw(QPainter& painter, int scrollX) override;
-    void onHitFromBelow() override;
+    int onHitFromBelow() override;
 
 };

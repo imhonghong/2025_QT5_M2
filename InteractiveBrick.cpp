@@ -16,8 +16,8 @@ void InteractiveBrick::draw(QPainter& painter, int scrollX) {
     painter.drawPixmap(x - scrollX, y, width, height, toDraw);
 }
 
-void InteractiveBrick::onHitFromBelow() {
-    if (used) return;
+int InteractiveBrick::onHitFromBelow() {
+    if (used) return 0;
     used = true;
 
     // 這裡先用 qDebug 模擬掉落物件行為

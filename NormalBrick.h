@@ -7,7 +7,7 @@ public:
     NormalBrick(int x, int y, int coinLimit = 0);  // coinLimit=0 表示沒有金幣
 
     void draw(QPainter& painter, int scrollX) override;
-    void onHitFromBelow() override;
+    int onHitFromBelow() override;
 
     int getCoinsLeft() const { return coinsLeft; }
 

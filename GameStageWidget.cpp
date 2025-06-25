@@ -5,6 +5,7 @@
 #include "InteractiveBrick.h"
 #include "Coin.h"
 #include "NormalBrick.h"
+#include "BrokenBrick.h"
 
 #include <QVBoxLayout>
 #include <QPainter>
@@ -96,7 +97,11 @@ void GameStageWidget::initStage() {
 
     Brick* nb = new NormalBrick(600, 370, 3);  // 擺在某個你看得到的位置
     bricks.push_back(nb);
-    bricks.push_back(new NormalBrick(1000, 370));  // 不含金幣
+    bricks.push_back(new NormalBrick(1000, 400));  // 不含金幣
+    bricks.push_back(new NormalBrick(1100, 410));  // 不含金幣
+
+    bricks.push_back(new BrokenBrick(900, 370));
+
     qDebug() << "Init InteractiveBrick at pos = (450, 370)";
 
     // 旗子
@@ -123,7 +128,7 @@ void GameStageWidget::reset()
 
 void GameStageWidget::updateGame() {
     // ✅ 如果 Mario 掉下畫面底下，直接結束遊戲
-    if (mario.getY() > 650 && !isDeathHandled) {
+    if (mario.getY() > 700 && !isDeathHandled) {
         isDeathHandled = true;
         gameTimer->stop();
         emit gameLose();
@@ -149,6 +154,7 @@ void GameStageWidget::updateGame() {
     mario.update();
 
     bool landed = false;
+
     // 和磚塊碰撞
     for (Brick* brick : bricks) {
         if (!brick) continue;
@@ -171,20 +177,21 @@ void GameStageWidget::updateGame() {
         QRect marioHead(mx, my, mw, 1);
         if (!mario.getOnGround() && mario.getVy() < 0 && marioHead.intersects(brickRect)) {
             mario.setVy(0);
+            mario.setY(by + bh);
         // 🔽 在這裡處理敲擊 & 加分
             NormalBrick* nb = dynamic_cast<NormalBrick*>(brick);
             if (nb) {
-                int before = nb->getCoinsLeft();  // 需要你加一個 getCoinsLeft()
-                nb->onHitFromBelow();             // 執行扣除
-                int after = nb->getCoinsLeft();
-                score += (before - after);        // 加了幾分
-                if (before > after) {
-                    floatingCoins.append(new FloatingCoin(brick->getX(), brick->getY()-50));
+                int coinsGained = nb->onHitFromBelow();  // 回傳這次獲得的金幣數
+                score += coinsGained;
+                if (coinsGained > 0) {
+                    floatingCoins.append(new FloatingCoin(brick->getX(), brick->getY() - 10));
+                    qDebug() << "Score += " << coinsGained << ", total score:" << score;
                 }
-                qDebug() << "NormalBrick hit: + " << (before - after) << " Score: " << score;
             } else {
-                brick->onHitFromBelow();  // 一般互動磚還是會做反應
+                brick->onHitFromBelow();
             }
+            qDebug() << "上方碰撞" ;
+            break;
         }
 
         // === 往下撞到磚塊（腳落地）===
@@ -196,9 +203,10 @@ void GameStageWidget::updateGame() {
             mario.setIsJumping(false);
             mario.land();
             landed = true;
+            break;
         }
 
-        if (marioRect.intersects(brickRect)) {
+        if (marioRect.intersects(brickRect) && !(mario.getVy() <= 0 ) ) {
             bool isAbove = my + mh <= by + 5;
             bool isBelow = my >= by + bh - 5;
 
@@ -222,6 +230,17 @@ void GameStageWidget::updateGame() {
             score++;
             qDebug() << "Coin collected! Score: " << score;
         }
+    }
+
+    // broken brick移除
+    for (int i = 0; i < bricks.size(); ) {
+        BrokenBrick* bb = dynamic_cast<BrokenBrick*>(bricks[i]);
+        if (bb && bb->isBroken()) {
+            delete bricks[i];
+            bricks.remove(i);
+            continue;  // 不用 ++i，因為 remove 已移位
+        }
+        ++i;
     }
 
     // 更新浮動金幣動畫
@@ -297,7 +316,7 @@ void GameStageWidget::keyPressEvent(QKeyEvent* event)
     }
     if (event->key() == Qt::Key_Space && !mario.getIsJumping()) {
         if (mario.getOnGround()) {
-            mario.setVy(-22);             // 向上跳
+            mario.setVy(-25);             // 向上跳
             mario.setOnGround(false);     // 離地
         }
     }

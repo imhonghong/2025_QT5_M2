@@ -12,12 +12,13 @@ public:
     virtual ~Brick() = default;
 
     virtual void draw(QPainter& painter, int scrollX) = 0;
-    virtual void onHitFromBelow() = 0;
+    virtual int onHitFromBelow() = 0;
 
     int getX() const { return x; }
     int getY() const { return y; }
     int getWidth() const { return width; }
     int getHeight() const { return height; }
+    QRect getRect() const { return QRect(x, y, width, height); }
 
 protected:
     int x, y;

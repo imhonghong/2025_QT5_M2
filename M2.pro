@@ -9,6 +9,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    BrokenBrick.cpp \
     Coin.cpp \
     FinishStageWidget.cpp \
     FlagItem.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 
 HEADERS += \
     Brick.h \
+    BrokenBrick.h \
     Coin.h \
     FinishStageWidget.h \
     FlagItem.h \

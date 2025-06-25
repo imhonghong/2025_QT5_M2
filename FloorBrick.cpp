@@ -15,7 +15,7 @@ void FloorBrick::draw(QPainter& painter, int scrollX) {
         painter.drawPixmap(x - scrollX, y, width, height, pixmap);
 }
 
-void FloorBrick::onHitFromBelow() {
-    // Floor brick 沒有反應
+int FloorBrick::onHitFromBelow() {
+    return 0;
 }
 

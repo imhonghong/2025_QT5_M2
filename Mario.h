@@ -28,6 +28,8 @@ public:
 
     int getWidth() const { return width; }
     int getHeight() const { return height; }
+
+    QRect getRect() const { return QRect(x, y, width, height); }
     bool getOnGround() const {return isOnGround; }
 
     int getVy() const { return vy; }
