@@ -3,6 +3,7 @@
 #include "Item.h"
 #include "Mario.h"
 #include "InteractiveBrick.h"
+#include "Coin.h"
 
 #include <QVBoxLayout>
 #include <QPainter>
@@ -93,7 +94,13 @@ void GameStageWidget::initStage() {
     bricks.push_back(b);
     qDebug() << "Init InteractiveBrick at pos = (450, 370)";
 
+    // 旗子
     items.push_back(new FlagItem(6975, 520));
+
+    // 金幣
+    Coin* c = new Coin(400, 400);
+    items.push_back(c);
+
 }
 
 void GameStageWidget::reset()
@@ -187,6 +194,16 @@ void GameStageWidget::updateGame() {
             }
         }
     }
+
+    for (Item* item : items) {
+        auto* coin = dynamic_cast<Coin*>(item);
+        if (coin && coin->isVisible() && coin->checkCollision(mario)) {
+            coin->setVisible(false);
+            score++;
+            qDebug() << "Coin collected! Score: " << score;
+        }
+    }
+
     checkGameState();
     update();
     marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
