@@ -21,8 +21,10 @@ SOURCES += \
     InteractiveBrick.cpp \
     Mario.cpp \
     NormalBrick.cpp \
+    Pipe.cpp \
     PrepareStageWidget.cpp \
     SuperMushroom.cpp \
+    ToxicMushroom.cpp \
     main.cpp \
     MainWindow.cpp
 
@@ -42,8 +44,10 @@ HEADERS += \
     MainWindow.h \
     Mario.h \
     NormalBrick.h \
+    Pipe.h \
     PrepareStageWidget.h \
-    SuperMushroom.h
+    SuperMushroom.h \
+    ToxicMushroom.h
 
 FORMS += \
     mainwindow.ui

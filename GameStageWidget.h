@@ -14,6 +14,7 @@
 #include "FloatingCoin.h"
 #include "SuperMushroom.h"
 #include "Fireball.h"
+#include "ToxicMushroom.h"
 
 class GameStageWidget : public QWidget
 {
@@ -65,5 +66,13 @@ private:
 
     QVector<FloatingCoin*> floatingCoins;
     QVector<Fireball*> fireballs;
+
+    QVector<ToxicMushroom*> toxicMushrooms;
+
+    bool invincible = false;
+    QTimer* invincibleTimer;
+
+    bool marioVisible = true;          // 控制是否繪出 Mario
+    QTimer* flickerTimer = nullptr;    // 閃爍用
 
 };

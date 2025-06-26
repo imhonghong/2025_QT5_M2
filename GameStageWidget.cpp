@@ -9,6 +9,7 @@
 #include "SuperMushroom.h"
 #include "FireFlower.h"
 #include "Fireball.h"
+#include "Pipe.h"
 
 #include <cmath>
 #include <QVBoxLayout>
@@ -16,6 +17,7 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QPushButton>
+#include <QPainter>
 
 GameStageWidget::GameStageWidget(QWidget* parent)
     : QWidget(parent), hp(3), score(0)
@@ -105,6 +107,9 @@ void GameStageWidget::initStage() {
 
     bricks.push_back(new BrokenBrick(900, 370));
 
+    bricks.push_back(new Pipe(1000, 420));
+    bricks.push_back(new Pipe(1400, 420));
+
     qDebug() << "Init InteractiveBrick at pos = (450, 370)";
 
     // 旗子
@@ -117,7 +122,25 @@ void GameStageWidget::initStage() {
     // superMushroom
     items.append(new FireFlower(300, 400));
 
+    // 毒蘑菇
+    toxicMushrooms.append(new ToxicMushroom(1200, 470, this));
 
+
+    // 瑪利歐無敵時間計時器
+    invincibleTimer = new QTimer(this);
+    invincibleTimer->setSingleShot(true);
+
+    connect(invincibleTimer, &QTimer::timeout, this, [=]() {
+        invincible = false;
+        marioVisible = true;
+        flickerTimer->stop();
+        qDebug() << "Mario is no longer invincible.";
+    });
+    flickerTimer = new QTimer(this);
+    connect(flickerTimer, &QTimer::timeout, this, [=]() {
+        marioVisible = !marioVisible;
+        update();
+    });
 
 }
 
@@ -144,6 +167,8 @@ void GameStageWidget::updateGame() {
         emit gameLose();
         return;
     }
+
+
 
     // 背景跟隨滾動
     int marioX = mario.getX();
@@ -301,6 +326,33 @@ void GameStageWidget::updateGame() {
         }
     }
 
+    // 毒蘑菇偵測
+    for (ToxicMushroom* tm : toxicMushrooms) {
+        if (!tm->isAlive()) continue;
+
+        tm->update();
+        if (tm->checkMarioCollision(mario)) {
+            if (!invincible) {
+                hp--;
+                invincible = true;
+                marioVisible = true;
+                invincibleTimer->start(2000);  // 無敵持續時間
+                flickerTimer->start(100);      // 每 100ms 閃爍一次
+                qDebug() << "Mario hit! HP:" << hp;
+            }
+        }
+
+        for (Fireball* fb : fireballs) {
+            bool hit = false;
+            tm->checkFireballCollision(fb->getRect(), hit);
+            if (hit) fb->destroy();
+        }
+
+        for (Brick* brick : bricks) {
+            tm->checkBlockCollision(brick->getRect());
+        }
+    }
+
     checkGameState();
     update();
     marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
@@ -346,13 +398,20 @@ void GameStageWidget::paintEvent(QPaintEvent*)
     for (Item* item : items) {
         if (item) item->draw(painter, scrollX);
     }
-    mario.draw(painter, scrollX);
+
+    if (marioVisible) {
+        mario.draw(painter, scrollX);
+    }
 
     for (FloatingCoin* fc : floatingCoins) {
         fc->draw(painter, scrollX);
     }
-    for (Fireball* f : fireballs)
+    for (Fireball* f : fireballs){
         f->draw(painter, scrollX);
+    }
+    for (ToxicMushroom* tm : toxicMushrooms) {
+        tm->draw(painter, scrollX);
+    }
 
 }
 

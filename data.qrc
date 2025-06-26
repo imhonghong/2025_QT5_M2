@@ -50,6 +50,9 @@
         <file>data/item/flag-pole.png</file>
         <file>data/item/super mushroom.png</file>
         <file>data/item/bullet.png</file>
+        <file>data/mushroom/toxic mushroom1.png</file>
+        <file>data/mushroom/toxic mushroom2.png</file>
+        <file>data/mushroom/toxic mushroom3.png</file>
     </qresource>
     <qresource prefix="/bg">
         <file>data/bg/background.png</file>
