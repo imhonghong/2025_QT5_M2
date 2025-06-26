@@ -394,8 +394,12 @@ void GameStageWidget::keyPressEvent(QKeyEvent* event)
     }
     if (event->key() == Qt::Key_Space && !mario.getIsJumping()) {
         if (mario.getOnGround()) {
-            mario.setVy(-25);             // 向上跳
-            mario.setOnGround(false);     // 離地
+            if (mario.getIsBig())
+                mario.setVy(-26); // 大瑪利歐跳 160px
+            else
+                mario.setVy(-22); // 小瑪利歐跳 100px
+
+            mario.setOnGround(false);
         }
     }
     QWidget::keyPressEvent(event);

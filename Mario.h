@@ -44,6 +44,7 @@ public:
     void die();
 
     void setIsBig(bool x);
+    bool getIsBig() const {return isBig;}
 
     void enableFire();  // 吃到火花後進入能射擊狀態
     bool canShoot() const;
