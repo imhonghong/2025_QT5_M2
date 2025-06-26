@@ -15,6 +15,7 @@
 #include "SuperMushroom.h"
 #include "Fireball.h"
 #include "ToxicMushroom.h"
+#include "Brick.h"
 
 class GameStageWidget : public QWidget
 {

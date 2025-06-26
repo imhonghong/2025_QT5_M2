@@ -117,6 +117,7 @@ void Mario::setIsBig(bool x) {
     if (isBig) {
         width = 56;
         height = 80;  // 變大時，調整高度
+        y -= 80-50;
     } else {
         width = 50;
         height = 50;   // 恢復小瑪利歐大小
