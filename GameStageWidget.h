@@ -28,6 +28,9 @@ public:
     void addScore(int delta);
     void addFloatingCoin(int x, int y);
 
+    void updateOtherItem();
+
+
 protected:
     void paintEvent(QPaintEvent*) override;
     void keyPressEvent(QKeyEvent* event) override;

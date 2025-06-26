@@ -192,7 +192,6 @@ void GameStageWidget::updateGame() {
     // 跳躍後落地
     if (mario.getOnGround() && mario.getState() == Mario::JUMPING) {
         mario.setState(Mario::STANDING);
-
     }
     mario.update();
 
@@ -265,7 +264,111 @@ void GameStageWidget::updateGame() {
             }
         }
     }
+    updateOtherItem();
+    checkGameState();
+    update();
+    marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
+    scoreLabel->setText(QString("Score: %1").arg(score));
+    if (!landed) mario.setOnGround(false);
+}
 
+
+void GameStageWidget::checkGameState()
+{
+    // 假設遊戲結束條件
+    if (hp <= 0) {
+        gameTimer->stop();
+        emit gameLose();
+    }
+
+    // 碰到旗杆
+    for (Item* item : items) {
+        auto* flag = dynamic_cast<FlagItem*>(item);
+        if ( flag && flag->checkCollision(mario)) {
+            flag->activate();
+            gameTimer->stop();
+            flagTimer->start(30);
+            return;
+        }
+    }
+}
+
+void GameStageWidget::paintEvent(QPaintEvent*)
+{
+    QPainter painter(this);
+    painter.drawPixmap(0, 0, fullBackground.copy(scrollX, 0, width(), height()));
+
+
+
+    // ✅ 畫出目前範圍內的磚塊
+    for (Brick* brick : bricks) {
+        if (brick) brick->draw(painter, scrollX);
+    }
+
+    for (Item* item : items) {
+        if (item) item->draw(painter, scrollX);
+    }
+
+    if (marioVisible) {
+        mario.draw(painter, scrollX);
+    }
+
+    for (FloatingCoin* fc : floatingCoins) {
+        fc->draw(painter, scrollX);
+    }
+    for (Fireball* f : fireballs){
+        f->draw(painter, scrollX);
+    }
+    for (ToxicMushroom* tm : toxicMushrooms) {
+        tm->draw(painter, scrollX);
+    }
+
+}
+
+void GameStageWidget::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Left) {
+        mario.moveLeft();
+    } else if (event->key() == Qt::Key_Right) {
+        mario.moveRight();
+    }
+    if (event->key() == Qt::Key_Space && !mario.getIsJumping()) {
+        if (mario.getOnGround()) {
+            mario.setVy(-25);             // 向上跳
+            mario.setOnGround(false);     // 離地
+        }
+    }
+    QWidget::keyPressEvent(event);
+}
+
+void GameStageWidget::keyReleaseEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
+        mario.stopMoving();
+    }
+    QWidget::keyReleaseEvent(event);
+}
+
+void GameStageWidget::mousePressEvent(QMouseEvent* event) {
+    if (mario.canShoot() && event->button() == Qt::LeftButton) {
+        QPoint target = event->pos();
+        int mx = mario.getX() + mario.getWidth() / 2;
+        int my = mario.getY() + mario.getHeight() / 2;
+        float dx = target.x() + scrollX - mx;
+        float dy = target.y() - my;
+        float len = sqrt(dx*dx + dy*dy);
+        float speed = 10.0;
+        float vx = speed * dx / len;
+        float vy = speed * dy / len;
+
+        if (mario.shootFireball()) {
+            fireballs.append(new Fireball(mx, my, vx, vy));
+        }
+    }
+}
+
+void GameStageWidget::updateOtherItem()
+{
     for (Item* item : items) {
         auto* coin = dynamic_cast<Coin*>(item);
         if (coin && coin->isVisible() && coin->checkCollision(mario)) {
@@ -274,7 +377,6 @@ void GameStageWidget::updateGame() {
             qDebug() << "Coin collected! Score: " << score;
         }
     }
-
     for (Item* item : items) {
         auto* sm = dynamic_cast<SuperMushroom*>(item);
         if (sm && !sm->isCollected()) {
@@ -400,107 +502,6 @@ void GameStageWidget::updateGame() {
             tm->checkBlockCollision(brick->getRect());
         }
     }
-
-    checkGameState();
-    update();
-    marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
-    scoreLabel->setText(QString("Score: %1").arg(score));
-    if (!landed) mario.setOnGround(false);
-
-
 }
 
 
-void GameStageWidget::checkGameState()
-{
-    // 假設遊戲結束條件
-    if (hp <= 0) {
-        gameTimer->stop();
-        emit gameLose();
-    }
-
-    // 碰到旗杆
-    for (Item* item : items) {
-        auto* flag = dynamic_cast<FlagItem*>(item);
-        if ( flag && flag->checkCollision(mario)) {
-            flag->activate();
-            gameTimer->stop();
-            flagTimer->start(30);
-            return;
-        }
-    }
-}
-
-void GameStageWidget::paintEvent(QPaintEvent*)
-{
-    QPainter painter(this);
-    painter.drawPixmap(0, 0, fullBackground.copy(scrollX, 0, width(), height()));
-
-
-
-    // ✅ 畫出目前範圍內的磚塊
-    for (Brick* brick : bricks) {
-        if (brick) brick->draw(painter, scrollX);
-    }
-
-    for (Item* item : items) {
-        if (item) item->draw(painter, scrollX);
-    }
-
-    if (marioVisible) {
-        mario.draw(painter, scrollX);
-    }
-
-    for (FloatingCoin* fc : floatingCoins) {
-        fc->draw(painter, scrollX);
-    }
-    for (Fireball* f : fireballs){
-        f->draw(painter, scrollX);
-    }
-    for (ToxicMushroom* tm : toxicMushrooms) {
-        tm->draw(painter, scrollX);
-    }
-
-}
-
-void GameStageWidget::keyPressEvent(QKeyEvent* event)
-{
-    if (event->key() == Qt::Key_Left) {
-        mario.moveLeft();
-    } else if (event->key() == Qt::Key_Right) {
-        mario.moveRight();
-    }
-    if (event->key() == Qt::Key_Space && !mario.getIsJumping()) {
-        if (mario.getOnGround()) {
-            mario.setVy(-25);             // 向上跳
-            mario.setOnGround(false);     // 離地
-        }
-    }
-    QWidget::keyPressEvent(event);
-}
-
-void GameStageWidget::keyReleaseEvent(QKeyEvent* event)
-{
-    if (event->key() == Qt::Key_Left || event->key() == Qt::Key_Right) {
-        mario.stopMoving();
-    }
-    QWidget::keyReleaseEvent(event);
-}
-
-void GameStageWidget::mousePressEvent(QMouseEvent* event) {
-    if (mario.canShoot() && event->button() == Qt::LeftButton) {
-        QPoint target = event->pos();
-        int mx = mario.getX() + mario.getWidth() / 2;
-        int my = mario.getY() + mario.getHeight() / 2;
-        float dx = target.x() + scrollX - mx;
-        float dy = target.y() - my;
-        float len = sqrt(dx*dx + dy*dy);
-        float speed = 10.0;
-        float vx = speed * dx / len;
-        float vy = speed * dy / len;
-
-        if (mario.shootFireball()) {
-            fireballs.append(new Fireball(mx, my, vx, vy));
-        }
-    }
-}
