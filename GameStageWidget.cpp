@@ -98,7 +98,7 @@ void GameStageWidget::initStage() {
         bricks.push_back(b);
         // qDebug() << "Init floor at x =" << i * tileWidth;
     }
-    bricks.append(new InteractiveBrick(500, 400, BrickContent::None, this));
+    bricks.append(new InteractiveBrick(300, 400, BrickContent::None, this));
 
     Brick* nb = new NormalBrick(600, 370, 3);  // 擺在某個你看得到的位置
     bricks.push_back(nb);
@@ -109,8 +109,8 @@ void GameStageWidget::initStage() {
 
     bricks.push_back(new Pipe(1000, 420));
     bricks.push_back(new Pipe(1400, 420));
-
-    qDebug() << "Init InteractiveBrick at pos = (450, 370)";
+    bricks.push_back(new Pipe(600, 420));
+    bricks.push_back(new Pipe(200, 420));
 
     // 旗子
     items.push_back(new FlagItem(6975, 520));
@@ -159,6 +159,16 @@ void GameStageWidget::addItem(Item* item) {
     items.append(item);
 }
 
+void GameStageWidget::addScore(int delta) {
+    score += delta;
+    qDebug() << "[Game] Score += " << delta << ", now:" << score;
+}
+
+void GameStageWidget::addFloatingCoin(int x, int y) {
+    floatingCoins.append(new FloatingCoin(x, y));
+}
+
+
 void GameStageWidget::updateGame() {
     // ✅ 如果 Mario 掉下畫面底下，直接結束遊戲
     if (mario.getY() > 700 && !isDeathHandled) {
@@ -167,8 +177,6 @@ void GameStageWidget::updateGame() {
         emit gameLose();
         return;
     }
-
-
 
     // 背景跟隨滾動
     int marioX = mario.getX();
@@ -268,11 +276,51 @@ void GameStageWidget::updateGame() {
     }
 
     for (Item* item : items) {
-        SuperMushroom* sm = dynamic_cast<SuperMushroom*>(item);
-        if (sm && sm->checkCollision(mario)) {
-            mario.setIsBig(true);
-            sm->setCollected(true);  // 你可以新增這函式，或直接 sm->collected = true;
-            qDebug() << "Mario eat Super Mushroom!";
+        auto* sm = dynamic_cast<SuperMushroom*>(item);
+        if (sm && !sm->isCollected()) {
+            sm->update();  // 內部控制 Emerging → Walking
+            for (Brick* b : bricks) {
+                Pipe* pipe = dynamic_cast<Pipe*>(b);
+                if (pipe) {
+                    sm->checkPipeCollision(pipe->getRect());  // ✅ 確保執行這段
+                }
+            }
+
+
+            // 🔽 若目前為 walking，且沒有落在磚塊上，就改為 Falling
+            if (sm->getState() == SuperMushroom::Walking) {
+                bool onBlock = false;
+                QRect mushroomRect(sm->getX(), sm->getY() + sm->getHeight(), sm->getWidth(), 1);  // 下方線
+
+                for (Brick* b : bricks) {
+                    if (mushroomRect.intersects(b->getRect())) {
+                        onBlock = true;
+                        break;
+                    }
+                }
+                if (!onBlock) {
+                    sm->setState(SuperMushroom::Falling);  // 進入掉落
+                }
+            }
+
+            // 🔽 若目前為 falling，檢查是否落地
+            if (sm->getState() == SuperMushroom::Falling) {
+                QRect mushroomFeet(sm->getX(), sm->getY() + sm->getHeight(), sm->getWidth(), 1);
+                for (Brick* b : bricks) {
+                    if (mushroomFeet.intersects(b->getRect())) {
+                        sm->setY(b->getY() - sm->getHeight());
+                        sm->setVy(0);
+                        sm->setState(SuperMushroom::Walking);
+                        break;
+                    }
+                }
+            }
+
+            if (sm->checkCollision(mario)) {
+                mario.setIsBig(true);
+                sm->setCollected(true);
+                qDebug() << "Mario eat Super Mushroom!";
+            }
         }
     }
 

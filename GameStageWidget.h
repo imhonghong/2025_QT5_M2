@@ -25,6 +25,8 @@ public:
     void reset(); // 重新初始化遊戲
 
     void addItem(Item* item);
+    void addScore(int delta);
+    void addFloatingCoin(int x, int y);
 
 protected:
     void paintEvent(QPaintEvent*) override;

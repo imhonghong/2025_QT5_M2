@@ -10,7 +10,7 @@ public:
     bool checkCollision(const Mario& mario) const override;
 
     void activate();       // Mario 碰到後觸發動畫
-    void update();         // 每次動畫執行旗子滑下
+    void update() override;        // 每次動畫執行旗子滑下
     bool isActivated() const;
     bool isDone() const;
 

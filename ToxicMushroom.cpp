@@ -31,7 +31,6 @@ void ToxicMushroom::update() {
 void ToxicMushroom::draw(QPainter& painter, int scrollX) {
 
     if (currentImgPath.isEmpty()) return;
-    qDebug() << "[TM] draw currentImgPath=" << currentImgPath;
     painter.drawPixmap(x - scrollX, y, width, height,
                        QPixmap(currentImgPath));
 }
@@ -46,7 +45,6 @@ bool ToxicMushroom::checkMarioCollision( Mario& mario) {
     QRect marioRect = mario.getRect();
     QRect selfRect = getRect();
 
-    qDebug() << "[TM] 進入 checkMarioCollision, marioBottom=" << marioRect << " y+10=" << y+10;
 
     if (marioRect.intersects(selfRect)) {
         int marioBottom = mario.getY() + mario.getHeight();

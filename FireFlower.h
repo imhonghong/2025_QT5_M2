@@ -13,6 +13,8 @@ public:
     bool isCollected() const { return collected; }
     void setCollected(bool x) { collected = x; }
 
+    void update() override;
+
 private:
     QPixmap pix;
     bool collected = false;

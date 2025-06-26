@@ -17,3 +17,7 @@ bool FireFlower::checkCollision(const Mario& mario) const {
     QRect marioRect = mario.getRect();
     return flowerRect.intersects(marioRect);
 }
+
+void FireFlower::update() {
+    // 靜態 item 無需更新
+}

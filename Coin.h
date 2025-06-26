@@ -11,6 +11,8 @@ public:
     void setVisible(bool visible);
     bool isVisible() const;
 
+    void update() override;
+
 private:
     QPixmap coinPixmap;
     bool visible;

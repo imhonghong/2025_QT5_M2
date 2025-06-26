@@ -14,6 +14,8 @@ public:
 
     virtual void draw(QPainter& painter, int scrollX) = 0;
 
-    // 用來偵測是否與 Mario 發生接觸
-    virtual bool checkCollision(const Mario& mario) const = 0;
+
+    virtual bool checkCollision(const Mario& mario) const = 0; // 用來偵測是否與 Mario 發生接觸
+
+    virtual void update() = 0;  // 加入 update 函式，供動態物件用
 };

@@ -26,3 +26,7 @@ void Coin::setVisible(bool v) {
 bool Coin::isVisible() const {
     return visible;
 }
+
+void Coin::update() {
+    // 不需要做任何事
+}

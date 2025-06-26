@@ -7,6 +7,7 @@ public:
     Pipe(int x, int y, int w = 50, int h = 100);  // 預設高兩格
     void draw(QPainter& painter, int scrollX) override;
     int onHitFromBelow() override;  // 無效
+    QRect getRect() const { return QRect(x, y, width, height); }
 
 private:
     QPixmap pipePixmap;
