@@ -28,9 +28,7 @@ public:
     void addItem(Item* item);
     void addScore(int delta);
     void addFloatingCoin(int x, int y);
-
     void updateOtherItem();
-
 
 protected:
     void paintEvent(QPaintEvent*) override;

@@ -198,97 +198,97 @@ void GameStageWidget::updateGame() {
     bool landed = false;
 
     // === 第一步：處理地板磚塊的落地檢測 ===
-        for (Brick* brick : bricks) {
-            if (!brick) continue;
+    for (Brick* brick : bricks) {
+        if (!brick) continue;
 
-            FloorBrick* floorBrick = dynamic_cast<FloorBrick*>(brick);
-            if (!floorBrick) continue; // 只處理地板磚塊
+        FloorBrick* floorBrick = dynamic_cast<FloorBrick*>(brick);
+        if (!floorBrick) continue; // 只處理地板磚塊
 
-            int mx = mario.getX();
-            int my = mario.getY();
-            int mw = mario.getWidth();
-            int mh = mario.getHeight();
+        int mx = mario.getX();
+        int my = mario.getY();
+        int mw = mario.getWidth();
+        int mh = mario.getHeight();
 
-            int bx = brick->getX();
-            int by = brick->getY();
-            int bw = brick->getWidth();
-            int bh = brick->getHeight();
+        int bx = brick->getX();
+        int by = brick->getY();
+        int bw = brick->getWidth();
+        int bh = brick->getHeight();
 
-            // 地板只檢測落地，不檢測水平碰撞
-            if (mario.getVy() >= 0 && // 瑪利歐正在下落或靜止
-                my + mh <= by + 3 && // 瑪利歐底部接近地板頂部
-                my + mh + mario.getVy() >= by && // 下一幀會接觸到地板頂部
-                mx + mw > bx + 2 && mx < bx + bw - 2) { // 水平範圍重疊
+        // 地板只檢測落地，不檢測水平碰撞
+        if (mario.getVy() >= 0 && // 瑪利歐正在下落或靜止
+            my + mh <= by + 3 && // 瑪利歐底部接近地板頂部
+            my + mh + mario.getVy() >= by && // 下一幀會接觸到地板頂部
+            mx + mw > bx + 2 && mx < bx + bw - 2) { // 水平範圍重疊
 
-                mario.setY(by - mh);
-                mario.setVy(0);
-                mario.setOnGround(true);
-                mario.setIsJumping(false);
-                mario.land();
-                landed = true;
-                qDebug() << "地板落地碰撞";
-                break;
-            }
+            mario.setY(by - mh);
+            mario.setVy(0);
+            mario.setOnGround(true);
+            mario.setIsJumping(false);
+            mario.land();
+            landed = true;
+            qDebug() << "地板落地碰撞";
+            break;
         }
+    }
 
-        // === 第二步：處理其他磚塊的完整碰撞檢測 ===
-        for (Brick* brick : bricks) {
-            if (!brick) continue;
+    // === 第二步：處理其他磚塊的完整碰撞檢測 ===
+    for (Brick* brick : bricks) {
+        if (!brick) continue;
 
-            // 跳過地板磚塊，地板已經在上面處理過了
-            if (dynamic_cast<FloorBrick*>(brick)) continue;
+        // 跳過地板磚塊，地板已經在上面處理過了
+        if (dynamic_cast<FloorBrick*>(brick)) continue;
 
-            int mx = mario.getX();
-            int my = mario.getY();
-            int mw = mario.getWidth();
-            int mh = mario.getHeight();
+        int mx = mario.getX();
+        int my = mario.getY();
+        int mw = mario.getWidth();
+        int mh = mario.getHeight();
 
-            int bx = brick->getX();
-            int by = brick->getY();
-            int bw = brick->getWidth();
-            int bh = brick->getHeight();
+        int bx = brick->getX();
+        int by = brick->getY();
+        int bw = brick->getWidth();
+        int bh = brick->getHeight();
 
-            QRect marioRect(mx, my, mw, mh);
-            QRect brickRect(bx, by, bw, bh);
+        QRect marioRect(mx, my, mw, mh);
+        QRect brickRect(bx, by, bw, bh);
 
-            // === 2.1 優先檢測往上撞到磚塊（頭撞天花板）===
-            QRect marioHead(mx, my, mw, 1);
-            if (!mario.getOnGround() && mario.getVy() < 0 && marioHead.intersects(brickRect)) {
-                mario.setVy(0);
-                mario.setY(by + bh);
+        // === 2.1 優先檢測往上撞到磚塊（頭撞天花板）===
+        QRect marioHead(mx, my, mw, 1);
+        if (!mario.getOnGround() && mario.getVy() < 0 && marioHead.intersects(brickRect)) {
+            mario.setVy(0);
+            mario.setY(by + bh);
 
-                // 處理敲擊效果
-                NormalBrick* nb = dynamic_cast<NormalBrick*>(brick);
-                if (nb) {
-                    int coinsGained = nb->onHitFromBelow();
-                    score += coinsGained;
-                    if (coinsGained > 0) {
-                        floatingCoins.append(new FloatingCoin(brick->getX(), brick->getY() - 10));
-                        qDebug() << "Score += " << coinsGained << ", total score:" << score;
-                    }
-                } else {
-                    brick->onHitFromBelow();
+            // 處理敲擊效果
+            NormalBrick* nb = dynamic_cast<NormalBrick*>(brick);
+            if (nb) {
+                int coinsGained = nb->onHitFromBelow();
+                score += coinsGained;
+                if (coinsGained > 0) {
+                    floatingCoins.append(new FloatingCoin(brick->getX(), brick->getY() - 10));
+                    qDebug() << "Score += " << coinsGained << ", total score:" << score;
                 }
-                qDebug() << "上方碰撞";
-                break;
+            } else {
+                brick->onHitFromBelow();
             }
-
-            // === 2.2 檢測往下落地（腳接觸磚塊頂部）===
-            if (!landed && mario.getVy() >= 0 && // 如果還沒有在地板上落地
-                my + mh <= by + 3 && // 瑪利歐底部接近磚塊頂部
-                my + mh + mario.getVy() >= by && // 下一幀會接觸到磚塊頂部
-                mx + mw > bx + 2 && mx < bx + bw - 2) { // 水平範圍重疊
-
-                mario.setY(by - mh);
-                mario.setVy(0);
-                mario.setOnGround(true);
-                mario.setIsJumping(false);
-                mario.land();
-                landed = true;
-                qDebug() << "磚塊落地碰撞";
-                break;
-            }
+            qDebug() << "上方碰撞";
+            break;
         }
+
+        // === 2.2 檢測往下落地（腳接觸磚塊頂部）===
+        if (!landed && mario.getVy() >= 0 && // 如果還沒有在地板上落地
+            my + mh <= by + 3 && // 瑪利歐底部接近磚塊頂部
+            my + mh + mario.getVy() >= by && // 下一幀會接觸到磚塊頂部
+            mx + mw > bx + 2 && mx < bx + bw - 2) { // 水平範圍重疊
+
+            mario.setY(by - mh);
+            mario.setVy(0);
+            mario.setOnGround(true);
+            mario.setIsJumping(false);
+            mario.land();
+            landed = true;
+            qDebug() << "磚塊落地碰撞";
+            break;
+        }
+    }
     updateOtherItem();
     checkGameState();
     update();
