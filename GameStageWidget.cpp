@@ -100,8 +100,7 @@ void GameStageWidget::initStage() {
     }
     bricks.append(new InteractiveBrick(300, 400, BrickContent::None, this));
 
-    Brick* nb = new NormalBrick(600, 370, 3);  // 擺在某個你看得到的位置
-    bricks.push_back(nb);
+
     bricks.push_back(new NormalBrick(1000, 400));  // 不含金幣
     bricks.push_back(new NormalBrick(1100, 410));  // 不含金幣
 

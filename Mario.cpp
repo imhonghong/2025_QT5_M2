@@ -13,7 +13,7 @@ Mario::Mario()
     isBig = false;
     facing = RIGHT;
     state = STANDING;
-
+    fireballsLeft = 0;
     animFrame = 0;
 
     loadAllPixmaps();
@@ -112,15 +112,21 @@ void Mario::land() {
 }
 
 void Mario::setIsBig(bool x) {
-    isBig = x;
+    if (isBig == x) return;  // 沒變就不做事
 
-    if (isBig) {
-        width = 56;
-        height = 80;  // 變大時，調整高度
-        y -= 80-50;
-    } else {
+    if (!x) {
+        // 正在從大變小，記得維持底部不動
+        int bottom = y + height;
+        isBig = false;
         width = 50;
-        height = 50;   // 恢復小瑪利歐大小
+        height = 50;
+        y = bottom - height;  // 調整 y 讓底部維持不變
+    } else {
+        int bottom = y + height;
+        isBig = true;
+        width = 56;
+        height = 80;
+        y = bottom - height;  // 同理，變大也補正位置
     }
 }
 

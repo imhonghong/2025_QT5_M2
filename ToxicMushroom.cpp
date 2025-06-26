@@ -45,10 +45,9 @@ bool ToxicMushroom::checkMarioCollision( Mario& mario) {
     QRect marioRect = mario.getRect();
     QRect selfRect = getRect();
 
-
     if (marioRect.intersects(selfRect)) {
         int marioBottom = mario.getY() + mario.getHeight();
-        if (marioBottom <= y + 10 && mario.getVy() > 0) {
+        if (marioBottom <= y + 20 && mario.getVy() > 0) {
             alive = false;
             currentImgPath = ":/item/data/mushroom/toxic mushroom3.png";
             vx = 0;
@@ -57,6 +56,7 @@ bool ToxicMushroom::checkMarioCollision( Mario& mario) {
             qDebug() << "[TM] 踩死毒蘑菇! ";
             return false;  // 踩死 → 不扣血
         } else {
+            mario.setIsBig(false);
             return true;   // 撞擊 → 要扣血
         }
     }
