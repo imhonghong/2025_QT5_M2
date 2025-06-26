@@ -4,6 +4,9 @@
 #include <QPainter>
 #include <QMap>
 
+class Brick;
+class FloorBrick;
+
 class Mario {
 public:
     enum Direction { LEFT, RIGHT };
@@ -50,6 +53,10 @@ public:
     bool canShoot() const;
     bool shootFireball();  // 嘗試發射一顆火球（若還有子彈）
 
+    void setBricks(const QVector<Brick*>& list);
+    bool willCollide(int nextX);
+
+
 private:
     int x, y;
     int width, height;
@@ -68,4 +75,6 @@ private:
     void loadAllPixmaps(); // 載入所有圖片
 
     int fireballsLeft;
+
+    QVector<Brick*> bricks;
 };

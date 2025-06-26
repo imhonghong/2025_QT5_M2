@@ -1,6 +1,7 @@
 #include "Mario.h"
 #include <QString>
 #include <QDebug>
+#include "FloorBrick.h"
 
 Mario::Mario()
 {
@@ -21,19 +22,33 @@ Mario::Mario()
 
 void Mario::moveLeft() {
     if (x > 0) {
-            facing = LEFT;
-            state = RUNNING;
-            x -= isBig ? 70 : 50;
+        facing = LEFT;
+        state = RUNNING;
+        int step = isBig ? 70 : 50;
+
+        for (int actualStep = step; actualStep > 0; --actualStep) {
+            if (!willCollide(x - actualStep)) {
+                x -= actualStep;
+                break;
+            }
         }
+    }
 }
 
 void Mario::moveRight() {
     int maxX = 7000 - width;
-        if (x < maxX) {
-            facing = RIGHT;
-            state = RUNNING;
-            x += isBig ? 70 : 50;
+    if (x < maxX) {
+        facing = RIGHT;
+        state = RUNNING;
+        int step = isBig ? 70 : 50;
+
+        for (int actualStep = step; actualStep > 0; --actualStep) {
+            if (!willCollide(x + actualStep)) {
+                x += actualStep;
+                break;
+            }
         }
+    }
 }
 
 void Mario::stopMoving() {
@@ -142,6 +157,23 @@ bool Mario::shootFireball() {
     if (fireballsLeft > 0) {
         fireballsLeft--;
         return true;
+    }
+    return false;
+}
+
+void Mario::setBricks(const QVector<Brick*>& list) {
+    bricks = list;
+}
+
+bool Mario::willCollide(int nextX) {
+    QRect nextRect(nextX, y, width, height);
+    for (Brick* brick : bricks) {
+        if (!brick) continue;
+        if (dynamic_cast<FloorBrick*>(brick)) continue;  // 忽略地板（僅水平牆面）
+
+        if (nextRect.intersects(brick->getRect())) {
+            return true;  // 發生碰撞
+        }
     }
     return false;
 }

@@ -110,6 +110,7 @@ void GameStageWidget::initStage() {
     bricks.push_back(new Pipe(1400, 420));
 
     bricks.push_back(new Pipe(200, 420));
+    mario.setBricks(bricks);
 
     // 旗子
     items.push_back(new FlagItem(6975, 520));
@@ -286,42 +287,6 @@ void GameStageWidget::updateGame() {
                 landed = true;
                 qDebug() << "磚塊落地碰撞";
                 break;
-            }
-
-            // === 2.3 檢測水平碰撞（左右撞牆）===
-            if (marioRect.intersects(brickRect)) {
-                // 計算重疊區域
-                int overlapLeft = std::max(mx, bx);
-                int overlapRight = std::min(mx + mw, bx + bw);
-                int overlapTop = std::max(my, by);
-                int overlapBottom = std::min(my + mh, by + bh);
-
-                int overlapWidth = overlapRight - overlapLeft;
-                int overlapHeight = overlapBottom - overlapTop;
-
-                // 如果重疊區域有效且是水平碰撞
-                if (overlapWidth > 0 && overlapHeight > 0) {
-                    // 精細化邏輯：確認瑪利歐移動步幅是否導致碰撞問題
-                    bool isLanding = (mario.getVy() > 0 && my + mh <= by + 5 &&
-                                    mx + mw > bx + 2 && mx < bx + bw - 2);
-
-                    if (!isLanding || !mario.getOnGround()) {
-                        // 修正：加入移動步幅的檢測
-                        int marioNextX = mario.getX() + mario.getDirection() *50; // 預測下一步
-
-                        if (mario.getDirection() == Mario::LEFT && marioNextX < bx + bw && marioNextX + mw > bx) {
-                            mario.setX(bx + bw); // 貼齊右側
-                            qDebug() << "碰撞右側（阻擋）";
-                            break;
-                        }
-                        else if (mario.getDirection() == Mario::RIGHT &&
-                                 mario.getX() + mario.getWidth() > bx &&
-                                 mario.getX() < bx + bw) {
-                            mario.setX(bx - mario.getWidth());
-                            qDebug() << "碰撞左側（右走撞牆）";
-                        }
-                    }
-                }
             }
         }
     updateOtherItem();
