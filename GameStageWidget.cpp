@@ -16,7 +16,6 @@
 #include <QPainter>
 #include <QKeyEvent>
 #include <QDebug>
-#include <QPushButton>
 #include <QPainter>
 
 GameStageWidget::GameStageWidget(QWidget* parent)
@@ -36,12 +35,6 @@ GameStageWidget::GameStageWidget(QWidget* parent)
     marioPosLabel->move(200, 5);
     marioPosLabel->setStyleSheet("color: white; font-weight: bold;");
 
-    coinButton = new QPushButton("+1 Coin", this);
-    coinButton->move(20, 20);
-    connect(coinButton, &QPushButton::clicked, [this]() {
-        score++;
-        qDebug() << "Score: " << score;
-    });
 
     setFocusPolicy(Qt::StrongFocus); // 確保可接收鍵盤
     setFocus();// 主動取得焦點
@@ -132,13 +125,46 @@ void GameStageWidget::initStage() {
 
 void GameStageWidget::reset()
 {
-    hp = 3;
+    // 停止遊戲暫停計時
+    gameTimer->stop();
+
+    // 回收記憶體並清空容器
+    qDeleteAll(bricks);
+    bricks.clear();
+    qDeleteAll(items);
+    items.clear();
+    qDeleteAll(floatingCoins);
+    floatingCoins.clear();
+    qDeleteAll(fireballs);
+    fireballs.clear();
+    qDeleteAll(toxicMushrooms);
+    toxicMushrooms.clear();
+
+    // 重置分數與血量
     score = 0;
+    hp = 3;
+    scrollX = 0;
+    // 重置 Mario
+    mario = Mario(); // 呼叫 Mario 預設建構子
+    mario.setBricks(bricks);
+
+    // 重置標籤
     hpLabel->setText("HP: 3");
     scoreLabel->setText("Score: 0");
+    marioPosLabel->setText("X:0, Y:420");
+
+    // 清除狀態標記
     isDeathHandled = false;
-    qDebug() << "[GameStage] Game reset!";
+    invincible = false;
+    marioVisible = true;
+
+    // 重新初始化場景
+    initStage();
+
+    // 重啟遊戲計時器
     gameTimer->start();
+
+    qDebug() << "[GameStage] Game reset and restarted!";
 }
 
 void GameStageWidget::addItem(Item* item) {
