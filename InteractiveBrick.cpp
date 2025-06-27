@@ -26,8 +26,8 @@ int InteractiveBrick::onHitFromBelow() {
     if (used) return 0;
     used = true;
 
-    //int r = rand() % 3;  // 0 = coin, 1 = mushroom, 2 = fireflower
-    int r = 1;
+    int r = rand() % 3;  // 0 = coin, 1 = mushroom, 2 = fireflower
+    // int r = 2;
     Item* item = nullptr;
 
     if (r == 0) {

@@ -30,11 +30,12 @@ GameStageWidget::GameStageWidget(QWidget* parent)
     scoreLabel->move(100,5);
     scoreLabel->setStyleSheet("color: red; font-weight: bold;");
 
+    /*
     marioPosLabel = new QLabel("X:1000", this);
     marioPosLabel->setFixedWidth(400);
     marioPosLabel->move(200, 5);
     marioPosLabel->setStyleSheet("color: white; font-weight: bold;");
-
+    */
 
     setFocusPolicy(Qt::StrongFocus); // 確保可接收鍵盤
     setFocus();// 主動取得焦點
@@ -128,9 +129,11 @@ void GameStageWidget::reset()
     // 停止遊戲暫停計時
     gameTimer->stop();
 
-    // 回收記憶體並清空容器
+    // 先清除磚塊以避免 Mario 內指標殘留無效
     qDeleteAll(bricks);
     bricks.clear();
+
+    // 回收記憶體並清空容器
     qDeleteAll(items);
     items.clear();
     qDeleteAll(floatingCoins);
@@ -146,12 +149,12 @@ void GameStageWidget::reset()
     scrollX = 0;
     // 重置 Mario
     mario = Mario(); // 呼叫 Mario 預設建構子
-    mario.setBricks(bricks);
+
 
     // 重置標籤
     hpLabel->setText("HP: 3");
     scoreLabel->setText("Score: 0");
-    marioPosLabel->setText("X:0, Y:420");
+    // marioPosLabel->setText("X:0, Y:420");
 
     // 清除狀態標記
     isDeathHandled = false;
@@ -185,17 +188,6 @@ void GameStageWidget::handleDeath() {
 }
 
 void GameStageWidget::updateGame() {
-    // ✅ 如果 Mario 掉下畫面底下，直接結束遊戲
-    /*
-    if (mario.getY() > 620 && !isDeathHandled) {
-        isDeathHandled = true;
-        gameTimer->stop();
-        mario.die();
-        update();
-        QTimer::singleShot(1000, this, &GameStageWidget::handleDeath);
-        return;
-    }
-    */
 
     if (mario.getState() == Mario::DYING) {
         mario.update();
@@ -234,6 +226,7 @@ void GameStageWidget::updateGame() {
     if (mario.getOnGround() && mario.getState() == Mario::JUMPING) {
         mario.setState(Mario::STANDING);
     }
+
     mario.update();
 
     bool landed = false;
@@ -278,6 +271,9 @@ void GameStageWidget::updateGame() {
 
         // 跳過地板磚塊，地板已經在上面處理過了
         if (dynamic_cast<FloorBrick*>(brick)) continue;
+        BrokenBrick* bb = dynamic_cast<BrokenBrick*>(brick);
+        if (bb && bb->isBroken()) continue; // ✅ 排除破碎磚塊避免空氣牆
+
 
         int mx = mario.getX();
         int my = mario.getY();
@@ -333,7 +329,7 @@ void GameStageWidget::updateGame() {
     updateOtherItem();
     checkGameState();
     update();
-    marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
+    // marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
     scoreLabel->setText(QString("Score: %1").arg(score));
     hpLabel->setText(QString("hp: %1").arg(hp));
     if (!landed) mario.setOnGround(false);
@@ -471,6 +467,8 @@ void GameStageWidget::updateOtherItem()
                 QRect mushroomRect(sm->getX(), sm->getY() + sm->getHeight(), sm->getWidth(), 1);  // 下方線
 
                 for (Brick* b : bricks) {
+                    BrokenBrick* bb = dynamic_cast<BrokenBrick*>(b);
+                    if (bb && bb->isBroken()) continue; // 排除破碎磚塊
                     if (mushroomRect.intersects(b->getRect())) {
                         onBlock = true;
                         break;
@@ -485,6 +483,8 @@ void GameStageWidget::updateOtherItem()
             if (sm->getState() == SuperMushroom::Falling) {
                 QRect mushroomFeet(sm->getX(), sm->getY() + sm->getHeight(), sm->getWidth(), 1);
                 for (Brick* b : bricks) {
+                    BrokenBrick* bb = dynamic_cast<BrokenBrick*>(b);
+                    if (bb && bb->isBroken()) continue; // 排除破碎磚塊
                     if (mushroomFeet.intersects(b->getRect())) {
                         sm->setY(b->getY() - sm->getHeight());
                         sm->setVy(0);
@@ -518,6 +518,8 @@ void GameStageWidget::updateOtherItem()
 
         // 🔸 檢查撞磚塊
         for (Brick* brick : bricks) {
+            BrokenBrick* bb = dynamic_cast<BrokenBrick*>(brick);
+            if (bb && bb->isBroken()) continue; // 排除破碎磚塊
             if (fb->getRect().intersects(brick->getRect())) {
                 fb->destroy();
                 break;
@@ -529,17 +531,6 @@ void GameStageWidget::updateOtherItem()
             fireballs.remove(i);
             --i;
         }
-    }
-
-    // broken brick移除
-    for (int i = 0; i < bricks.size(); ) {
-        BrokenBrick* bb = dynamic_cast<BrokenBrick*>(bricks[i]);
-        if (bb && bb->isBroken()) {
-            delete bricks[i];
-            bricks.remove(i);
-            continue;  // 不用 ++i，因為 remove 已移位
-        }
-        ++i;
     }
 
     // 更新浮動金幣動畫
@@ -561,6 +552,8 @@ void GameStageWidget::updateOtherItem()
             bool onBlock = false;
             QRect mushroomRect(tm->getX(), tm->getY() + tm->getHeight(), tm->getWidth(), 1);
             for (Brick* b : bricks) {
+                BrokenBrick* bb = dynamic_cast<BrokenBrick*>(b);
+                if (bb && bb->isBroken()) continue; // 排除破碎磚塊
                 if (mushroomRect.intersects(b->getRect())) {
                     onBlock = true;
                     break;
@@ -575,6 +568,8 @@ void GameStageWidget::updateOtherItem()
         if (tm->getState() == ToxicMushroom::Falling) {
             QRect mushroomFeet(tm->getX(), tm->getY() + tm->getHeight(), tm->getWidth(), 1);
             for (Brick* b : bricks) {
+                BrokenBrick* bb = dynamic_cast<BrokenBrick*>(b);
+                if (bb && bb->isBroken()) continue; // 排除破碎磚塊
                 if (mushroomFeet.intersects(b->getRect())) {
                     tm->setY(b->getY() - tm->getHeight());
                     tm->setVy(0);
@@ -729,9 +724,4 @@ void GameStageWidget::addFrame5()
     bricks.append(new NormalBrick(  offsetX +1250,  offsetY - 100));
     bricks.append(new NormalBrick(  offsetX +1250,  offsetY - 150));
 
-
-
-
-
 }
-

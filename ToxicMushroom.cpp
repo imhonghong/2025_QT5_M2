@@ -63,7 +63,7 @@ bool ToxicMushroom::checkMarioCollision( Mario& mario) {
             currentImgPath = ":/item/data/mushroom/toxic mushroom3.png";
             vx = 0;
             mario.setVy(-8);
-            deathTimer->start(500);
+            deathTimer->start(250);
             qDebug() << "[TM] 踩死毒蘑菇! ";
             return false;  // 踩死 → 不扣血
         } else {
