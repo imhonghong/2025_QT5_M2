@@ -180,15 +180,44 @@ void GameStageWidget::addFloatingCoin(int x, int y) {
     floatingCoins.append(new FloatingCoin(x, y));
 }
 
+void GameStageWidget::handleDeath() {
+    emit gameLose();
+}
 
 void GameStageWidget::updateGame() {
     // ✅ 如果 Mario 掉下畫面底下，直接結束遊戲
-    if (mario.getY() > 700 && !isDeathHandled) {
+    /*
+    if (mario.getY() > 620 && !isDeathHandled) {
         isDeathHandled = true;
         gameTimer->stop();
-        emit gameLose();
+        mario.die();
+        update();
+        QTimer::singleShot(1000, this, &GameStageWidget::handleDeath);
         return;
     }
+    */
+
+    if (mario.getState() == Mario::DYING) {
+        mario.update();
+        update();
+        if (mario.getY() >= 620) {  // 到達畫面底部時觸發 gameLose
+            emit gameLose();
+        }
+        return;  // 死亡動畫時不進行其他碰撞偵測
+    }
+
+    if (mario.getY() >= 620 - mario.getHeight() && !isDeathHandled && mario.getState() != Mario::DYING) {
+        isDeathHandled = true;
+        gameTimer->stop();
+        mario.die();
+        update();
+        QTimer::singleShot(100, this, [this]() {
+            mario.setVy(-15);
+            gameTimer->start();
+        });
+        return;
+    }
+
 
     // 背景跟隨滾動
     int marioX = mario.getX();
@@ -313,16 +342,21 @@ void GameStageWidget::updateGame() {
 
 void GameStageWidget::checkGameState()
 {
-    // 假設遊戲結束條件
-    if (hp <= 0) {
-        gameTimer->stop();
-        emit gameLose();
+    if (hp <= 0 && !isDeathHandled) {
+        isDeathHandled = true;
+        gameTimer->stop();     // 暫停遊戲
+        mario.die();           // 設定 DYING 狀態
+        update();              // 重繪
+        QTimer::singleShot(100, this, [this]() {
+                mario.setVy(-15);   // 彈跳速度，可依需求微調
+                gameTimer->start(); // 恢復動畫更新
+            });
+        return;
     }
 
-    // 碰到旗杆
     for (Item* item : items) {
         auto* flag = dynamic_cast<FlagItem*>(item);
-        if ( flag && flag->checkCollision(mario)) {
+        if (flag && flag->checkCollision(mario)) {
             flag->activate();
             gameTimer->stop();
             flagTimer->start(30);

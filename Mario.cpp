@@ -57,6 +57,12 @@ void Mario::stopMoving() {
 
 void Mario::update() {
 
+    if (state == DYING && isDyingAnimation) {
+        vy += 1;    // 模擬重力，可微調
+        y += vy;
+        return;     // 不做其他狀態更新
+    }
+
     animFrame = (animFrame + 1) % 3;
 
     if (!isOnGround) {
@@ -81,7 +87,8 @@ QPixmap Mario::getCurrentFrame() {
         case STANDING: act = "S"; idx = 0; break;
         case RUNNING: act = "R"; idx = animFrame % 3; break;
         case JUMPING: act = "J"; idx = 1; break;
-        case DYING:   return pixmapTable["DIE"];
+        case DYING:
+            return isBig ? pixmapTable["DIE_B"] : pixmapTable["DIE_S"];
     }
 
     QString sizeStr = isBig ? "B" : "S";
@@ -112,11 +119,15 @@ void Mario::loadAllPixmaps() {
         }
     }
 
-    pixmapTable["DIE"] = QPixmap(":/Mario/data/MS/MS_die.png");
+    pixmapTable["DIE_S"] = QPixmap(":/Mario/data/MS/MS_die.png");
+    pixmapTable["DIE_B"] = QPixmap(":/Mario/data/MB/MB_die.png");
 }
 
 void Mario::die() {
     state = DYING;
+    isDyingAnimation = true;
+    vy = -15;   // 死亡彈跳初速度，可微調
+    isOnGround = false;
 }
 
 void Mario::land() {

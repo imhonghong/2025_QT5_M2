@@ -69,6 +69,8 @@ private:
     State state;
     int animFrame;
 
+    bool isDyingAnimation = false;
+
     QMap<QString, QPixmap> pixmapTable;
 
     QPixmap getCurrentFrame();

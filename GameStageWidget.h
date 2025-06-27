@@ -48,6 +48,7 @@ signals:
 
 private slots:
     void updateGame(); // 遊戲進行邏輯更新
+    void handleDeath();
 
 private:
     QTimer* gameTimer;
