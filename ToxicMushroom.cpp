@@ -17,7 +17,18 @@ ToxicMushroom::ToxicMushroom(int x, int y, QObject* parent)
 
 void ToxicMushroom::update() {
     if (!alive) return;
-    x += vx;
+
+    switch (state) {
+    case Walking:
+        x += vx;
+        break;
+
+    case Falling:
+        vy += 1;
+        y += static_cast<int>(vy);
+        break;
+    }
+
     walkCounter++;
     if (walkCounter >= 10) {
         walkCounter = 0;

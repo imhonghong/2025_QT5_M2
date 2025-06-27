@@ -497,6 +497,34 @@ void GameStageWidget::updateOtherItem()
     for (ToxicMushroom* tm : toxicMushrooms) {
         if (!tm->isAlive()) continue;
 
+        if (tm->getState() == ToxicMushroom::Walking) {
+            bool onBlock = false;
+            QRect mushroomRect(tm->getX(), tm->getY() + tm->getHeight(), tm->getWidth(), 1);
+            for (Brick* b : bricks) {
+                if (mushroomRect.intersects(b->getRect())) {
+                    onBlock = true;
+                    break;
+                }
+            }
+            if (!onBlock) {
+                tm->setState(ToxicMushroom::Falling);
+            }
+        }
+
+        // 若正在 Falling，檢查是否落地
+        if (tm->getState() == ToxicMushroom::Falling) {
+            QRect mushroomFeet(tm->getX(), tm->getY() + tm->getHeight(), tm->getWidth(), 1);
+            for (Brick* b : bricks) {
+                if (mushroomFeet.intersects(b->getRect())) {
+                    tm->setY(b->getY() - tm->getHeight());
+                    tm->setVy(0);
+                    tm->setState(ToxicMushroom::Walking);
+                    break;
+                }
+            }
+        }
+
+
         tm->update();
         if (tm->checkMarioCollision(mario)) {
             if (!invincible) {

@@ -18,6 +18,17 @@ public:
 
     bool isAlive() const;
 
+    enum State { Walking, Falling };
+    int getX() const { return x; }
+    int getY() const { return y; }
+    void setVy (int x) { vy = x;}
+    int getWidth() const { return width; }
+    int getHeight() const { return height; }
+    State getState() const {return state; }
+    void setState(State x) {state = x ;}
+    void setY(int newY) { y = newY; }
+
+
 private:
     int x, y;
     int width = 50, height = 50;
@@ -29,5 +40,8 @@ private:
     QString currentImgPath;     // 當前使用的圖片
 
     QTimer* deathTimer = nullptr;
+
+    State state = Walking;
+    double vy = 0;
 
 };
