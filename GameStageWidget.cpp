@@ -93,38 +93,24 @@ void GameStageWidget::initStage() {
     int totalTiles = totalWidth / tileWidth;
 
     for (int i = 0; i < totalTiles; ++i) { // floorBrick都挖掉畫面中間那塊
-        if (i % tilesPerScreen == tilesPerScreen / 2 || i % tilesPerScreen == 1+(tilesPerScreen / 2)) continue;
+        if (    i % tilesPerScreen == tilesPerScreen / 2
+            ||  i % tilesPerScreen == (tilesPerScreen / 2)+1
+            /*||  i % tilesPerScreen == (tilesPerScreen / 2)-1*/ ) continue;
         Brick* b = new FloorBrick(i * tileWidth, groundY);
         bricks.push_back(b);
         // qDebug() << "Init floor at x =" << i * tileWidth;
     }
-    bricks.append(new InteractiveBrick(300, 400, BrickContent::None, this));
 
+    addFrame1();
+    addFrame2();
+    addFrame3();
+    addFrame4();
+    addFrame5();
 
-    bricks.push_back(new NormalBrick(1000, 400));  // 不含金幣
-    bricks.push_back(new NormalBrick(1100, 410));  // 不含金幣
-
-    bricks.push_back(new BrokenBrick(900, 370));
-
-    bricks.push_back(new Pipe(1000, 420));
-    bricks.push_back(new Pipe(1400, 420));
-
-    bricks.push_back(new Pipe(200, 420));
     mario.setBricks(bricks);
 
     // 旗子
     items.push_back(new FlagItem(6975, 520));
-
-    // 金幣
-    Coin* c = new Coin(400, 400);
-    items.push_back(c);
-
-    // superMushroom
-    items.append(new FireFlower(300, 400));
-
-    // 毒蘑菇
-    toxicMushrooms.append(new ToxicMushroom(1200, 470, this));
-
 
     // 瑪利歐無敵時間計時器
     invincibleTimer = new QTimer(this);
@@ -294,6 +280,7 @@ void GameStageWidget::updateGame() {
     update();
     marioPosLabel->setText(QString("X: %1, Y: %2").arg(mario.getX()).arg(mario.getY()));
     scoreLabel->setText(QString("Score: %1").arg(score));
+    hpLabel->setText(QString("hp: %1").arg(hp));
     if (!landed) mario.setOnGround(false);
 }
 
@@ -450,6 +437,7 @@ void GameStageWidget::updateOtherItem()
             if (sm->checkCollision(mario)) {
                 mario.setIsBig(true);
                 sm->setCollected(true);
+                hp ++;
                 qDebug() << "Mario eat Super Mushroom!";
             }
         }
@@ -533,4 +521,129 @@ void GameStageWidget::updateOtherItem()
     }
 }
 
+
+void GameStageWidget::addFrame1()
+{
+    int offsetX = 0;
+    int offsetY = 620-100 ;
+    items.append(new Coin(          offsetX + 250,  offsetY - 100));
+    items.append(new Coin(          offsetX + 300,  offsetY - 150));
+    items.append(new Coin(          offsetX + 350,  offsetY - 100));
+    bricks.append(new BrokenBrick(  offsetX + 500,  offsetY - 100));
+    bricks.append(new BrokenBrick(  offsetX + 600,  offsetY - 200));
+    items.append(new Coin(          offsetX + 600,  offsetY - 300));
+    items.append(new Coin(          offsetX + 650,  offsetY - 350));
+    items.append(new Coin(          offsetX + 700,  offsetY - 300));
+    bricks.append(new InteractiveBrick(             offsetX + 850, offsetY - 150, BrickContent::None, this));
+    bricks.append(new Pipe(         offsetX + 1000, offsetY - 100));
+    toxicMushrooms.append(new ToxicMushroom(        offsetX + 1100, offsetY - 50, this));
+    bricks.append(new Pipe(         offsetX + 1300, offsetY - 100));
+
+}
+
+void GameStageWidget::addFrame2()
+{
+    int offsetX = 1400;
+    int offsetY = 620-100 ;
+
+    bricks.append(new NormalBrick(  offsetX + 100,  offsetY - 50));
+    bricks.append(new NormalBrick(  offsetX + 100,  offsetY - 100)); //no coin
+    bricks.append(new NormalBrick(  offsetX + 100,  offsetY - 150));
+    bricks.append(new BrokenBrick(  offsetX + 150,  offsetY - 150));
+    bricks.append(new BrokenBrick(  offsetX + 200,  offsetY - 150));
+    bricks.append(new BrokenBrick(  offsetX + 250,  offsetY - 150));
+    items.append(new Coin(          offsetX + 150,  offsetY - 50));
+    items.append(new Coin(          offsetX + 200,  offsetY - 50));
+    items.append(new Coin(          offsetX + 250,  offsetY - 50));
+    toxicMushrooms.append(new ToxicMushroom(        offsetX + 350, offsetY - 50, this));
+    bricks.append(new Pipe(         offsetX + 450,  offsetY - 100));
+    bricks.append(new NormalBrick(  offsetX + 850,  offsetY - 50));
+    bricks.append(new BrokenBrick(  offsetX + 950,  offsetY - 100));
+    items.append(new Coin(          offsetX + 1000, offsetY - 200));
+    items.append(new Coin(          offsetX + 1050, offsetY - 250));
+    items.append(new Coin(          offsetX + 1100, offsetY - 250));
+    items.append(new Coin(          offsetX + 1150, offsetY - 250));
+    items.append(new Coin(          offsetX + 1200, offsetY - 200));
+    bricks.append(new BrokenBrick(  offsetX + 1100, offsetY - 300));
+    toxicMushrooms.append(new ToxicMushroom(        offsetX + 1150, offsetY - 50, this));
+    bricks.append(new Pipe(         offsetX + 1250, offsetY - 100));
+
+}
+
+
+void GameStageWidget::addFrame3()
+{
+    int offsetX = 2800;
+    int offsetY = 620-100 ;
+
+    bricks.append(new NormalBrick(  offsetX + 150,  offsetY - 50));
+    toxicMushrooms.append(new ToxicMushroom(        offsetX + 250, offsetY - 50, this));
+    bricks.append(new NormalBrick(  offsetX + 300,  offsetY - 150));
+    bricks.append(new NormalBrick(  offsetX + 350,  offsetY - 150));
+    bricks.append(new NormalBrick(  offsetX + 400,  offsetY - 150));
+    items.append(new Coin(          offsetX + 300,  offsetY - 200));
+    items.append(new Coin(          offsetX + 350,  offsetY - 200));
+    items.append(new Coin(          offsetX + 400,  offsetY - 200));
+    bricks.append(new NormalBrick(  offsetX + 550,  offsetY - 50));
+    bricks.append(new InteractiveBrick(             offsetX + 900, offsetY - 150, BrickContent::None, this));
+    bricks.append(new Pipe(         offsetX + 1100, offsetY - 100));
+    bricks.append(new NormalBrick(  offsetX + 1250,  offsetY - 200));
+    items.append(new Coin(          offsetX + 1250,  offsetY - 250));
+
+}
+
+void GameStageWidget::addFrame4()
+{
+    int offsetX = 4200 ;
+    int offsetY = 620-100 ;
+
+    items.append(new Coin(          offsetX + 250,  offsetY - 150));
+    items.append(new Coin(          offsetX + 300,  offsetY - 150));
+    bricks.append(new NormalBrick(  offsetX + 450,  offsetY - 200));
+    bricks.append(new BrokenBrick(  offsetX + 500,  offsetY - 150));
+    bricks.append(new BrokenBrick(  offsetX + 550,  offsetY - 150));
+    toxicMushrooms.append(new ToxicMushroom(        offsetX + 500, offsetY - 200, this));
+    bricks.append(new NormalBrick(  offsetX + 600,  offsetY - 200));
+    bricks.append(new Pipe(         offsetX + 1000, offsetY - 100));
+    bricks.append(new NormalBrick(  offsetX + 1150,  offsetY - 50));
+    bricks.append(new NormalBrick(  offsetX + 1150,  offsetY - 100));
+    bricks.append(new NormalBrick(  offsetX + 1150,  offsetY - 150));
+    bricks.append(new NormalBrick(  offsetX + 1150,  offsetY - 200));
+
+}
+
+void GameStageWidget::addFrame5()
+{
+    int offsetX = 5600 ;
+    int offsetY = 620-100 ;
+
+    items.append(new Coin(          offsetX + 150,  offsetY - 150));
+    items.append(new Coin(          offsetX + 200,  offsetY - 150));
+    bricks.append(new Pipe(         offsetX + 450,  offsetY - 100));
+    toxicMushrooms.append(new ToxicMushroom(        offsetX + 550, offsetY - 50, this));
+    bricks.append(new NormalBrick(  offsetX + 600,  offsetY - 50));
+    bricks.append(new NormalBrick(  offsetX + 600,  offsetY - 100));
+    bricks.append(new NormalBrick(  offsetX + 600,  offsetY - 150));
+    bricks.append(new NormalBrick(  offsetX + 600,  offsetY - 200));
+
+    bricks.append(new NormalBrick(  offsetX + 800,  offsetY - 50));
+    bricks.append(new NormalBrick(  offsetX + 800,  offsetY - 100));
+    bricks.append(new NormalBrick(  offsetX + 800,  offsetY - 150));
+
+    bricks.append(new BrokenBrick(  offsetX +1000,  offsetY - 150));
+    bricks.append(new NormalBrick(  offsetX +1050,  offsetY - 150, 4));
+    bricks.append(new BrokenBrick(  offsetX +1100,  offsetY - 150));
+    items.append(new Coin(          offsetX +1000,  offsetY - 50));
+    items.append(new Coin(          offsetX +1050,  offsetY - 200));
+    items.append(new Coin(          offsetX +1100,  offsetY - 50));
+    bricks.append(new NormalBrick(  offsetX +1200,  offsetY - 50));
+    bricks.append(new NormalBrick(  offsetX +1250,  offsetY - 50));
+    bricks.append(new NormalBrick(  offsetX +1250,  offsetY - 100));
+    bricks.append(new NormalBrick(  offsetX +1250,  offsetY - 150));
+
+
+
+
+
+}
 

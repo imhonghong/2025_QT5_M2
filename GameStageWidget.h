@@ -30,6 +30,12 @@ public:
     void addFloatingCoin(int x, int y);
     void updateOtherItem();
 
+    void addFrame1();
+    void addFrame2();
+    void addFrame3();
+    void addFrame4();
+    void addFrame5();
+
 protected:
     void paintEvent(QPaintEvent*) override;
     void keyPressEvent(QKeyEvent* event) override;
