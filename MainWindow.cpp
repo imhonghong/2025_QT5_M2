@@ -1,10 +1,14 @@
 #include "MainWindow.h"
+#include <cstdlib>
+#include <ctime>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 
     setFixedSize(1400, 620);
+
+    srand(time(NULL));
 
     stackedWidget = new QStackedWidget(this);
 

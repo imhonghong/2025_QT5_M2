@@ -79,6 +79,7 @@ void ToxicMushroom::checkFireballCollision(const QRect& fireballRect, bool& hit)
     if (fireballRect.intersects(getRect())) {
         alive = false;
         hit = true;
+        currentImgPath = "";
         qDebug() << "Toxic mushroom killed by fireball!";
     }
 }

@@ -340,13 +340,11 @@ void GameStageWidget::checkGameState()
 {
     if (hp <= 0 && !isDeathHandled) {
         isDeathHandled = true;
-        gameTimer->stop();     // 暫停遊戲
         mario.die();           // 設定 DYING 狀態
         update();              // 重繪
         QTimer::singleShot(100, this, [this]() {
-                mario.setVy(-15);   // 彈跳速度，可依需求微調
-                gameTimer->start(); // 恢復動畫更新
-            });
+            mario.setVy(-15);   // 彈跳速度，可依需求微調
+        });
         return;
     }
 
@@ -581,13 +579,20 @@ void GameStageWidget::updateOtherItem()
 
 
         tm->update();
+        if (mario.getState() == Mario::DYING) continue;
         if (tm->checkMarioCollision(mario)) {
             if (!invincible) {
                 hp--;
+                if (hp <= 0) {
+                    isDeathHandled = true;
+                    mario.die();  // 不啟動無敵幀，直接進入死亡流程
+                    return;
+                } else {
                 invincible = true;
                 marioVisible = true;
                 invincibleTimer->start(2000);  // 無敵持續時間
                 flickerTimer->start(100);      // 每 100ms 閃爍一次
+                }
                 qDebug() << "Mario hit! HP:" << hp;
             }
         }
